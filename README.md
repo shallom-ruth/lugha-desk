@@ -25,11 +25,11 @@ The executable is target/release/lugha-desk.exe. For offline translation, place 
 
 - Model: [QVAC TranslatePsy-AfriSLM-0.8B Q8](https://huggingface.co/qvac/TranslatePsy-AfriSLM-0.8B-Q8-GGUF), revision 55220bcc74bed219ad9db9ab378f6aae31850974. Place TranslatePsy-AfriSLM-0.8B-Q8_0-imat.gguf in model/. Expected SHA-256 is checked in src/native.rs.
 - Runtime: [llama.cpp b11932 Windows x64 CPU release](https://github.com/ggml-org/llama.cpp/releases/tag/b11932). Keep llama-server.exe and its required runtime DLLs in runtime/. Preserve vendor notices and follow applicable runtime prerequisites.
-- Model/teacher/dataset terms are separate from this application's MIT license. Public redistribution review remains outstanding.
+- The model publisher declares Apache-2.0 for the weights. Teacher and dataset terms are separate. See LICENSING.md for component licenses and packaging requirements.
 
 ## Downloads
 
-No packaged application release is available yet. Downloadable assets will be published through GitHub Releases only after licensing checks. GitHub's automatically generated source archives contain source, not a bundled ready-to-run model pack.
+Packaged application downloads have not been published. GitHub's automatically generated source archives contain source, not a bundled ready-to-run model pack. See LICENSING.md for confirmed component licenses and the Windows runtime requirement.
 
 ## Privacy
 
