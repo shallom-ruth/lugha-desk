@@ -4,7 +4,7 @@ Offline translation for African languages, built in Rust for Windows x64. “Lug
 
 ## Current capabilities
 
-The installed-model integration offers English routes for 19 provider-listed African language options. Priorities are East Africa, West Africa and Southern Africa. The long-term goal is 120 distinct African languages; that coverage is not implemented.
+The installed-model integration offers English routes for 19 provider-listed African language options. The long-term goal is 120 distinct African languages; that coverage is not implemented.
 
 Base R exercised 27 complete executions across 12 model language options. This establishes technical execution, not correct meaning. The test evidence predates the product-name change; inference settings are unchanged. Known failures include French output on an English→Wolof case, questionable Luganda output, and the Swahili borrowing error. See tests/native-smoke-results-2026-10-28.csv.
 
