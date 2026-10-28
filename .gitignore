@@ -1,0 +1,10 @@
+/target/
+/model/
+/runtime/
+/dist/
+*.zip
+*.exe
+*.dll
+*.gguf
+.env
+.env.*
