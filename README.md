@@ -4,9 +4,9 @@ Offline translation for African languages, built in Rust for Windows x64. “Lug
 
 ## Download and Windows setup
 
-The corrected Windows launcher is about 22.5 MB. Its GitHub upload has not succeeded yet, so the new download is not available here. The previous ZIP remains available below.
+[Download the free Windows launcher, about 22.5 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.0-preview/Lugha-Desk-Launcher-0.3.0-startup-fix-Windows-x64.exe)
 
-Setup steps for the new launcher, once available:
+[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.0-preview)
 
 1. Open the downloaded launcher on Windows 10 or 11, x64.
 
@@ -34,7 +34,7 @@ The corrected launcher passed 13 normal Rust tests and its completed model reope
 
 ## Build from source
 
-The corrected app source is available in src/. Launcher source and generated runtime resources will accompany the launcher download once upload succeeds. GitHub’s automatic source archives do not contain the ready to run launcher.
+Matching launcher and app source, including generated runtime resources, is available in [Lugha Desk 0.3.0 Source](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.0-preview/Lugha-Desk-0.3.0-Source.zip). This developer archive is not needed to install the app. GitHub’s automatic source archives do not contain the ready to run launcher.
 
 Use a Rust Windows x64 toolchain and its linker prerequisites:
 
