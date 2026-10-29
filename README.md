@@ -2,6 +2,19 @@
 
 Offline translation for African languages, built in Rust for Windows x64. “Lugha” means language in Swahili. No Python or R installation is required by end users; R is used for testing. No cloud translation or paid API.
 
+## Download and Windows setup
+
+**[Download Lugha Desk 0.2.0 for Windows x64 — free ZIP (1.10 GB)](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.2.0/Lugha-Desk-0.2.0-Windows-x64.zip)**
+
+[Release notes](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.2.0) · [SHA-256 checksum](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.2.0/SHA256SUMS.txt)
+
+1. Use Windows 10 or 11, x64. Download the ZIP above; it includes the model and native translation engine.
+2. If needed, install the **[official Microsoft Visual C++ v14 Redistributable (x64)](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist)** from Microsoft. Review its terms yourself. Microsoft runtime DLLs and its installer are not bundled.
+3. Right-click the ZIP and select **Extract All**. Keep the entire extracted folder together, including `model/` and `runtime/`. Do not run the app inside the ZIP.
+4. Open **`lugha-desk.exe`**. Translation runs offline after prerequisite setup; no Python, R, Rust, account or paid API is needed.
+
+This is an **experimental pre-release** with known translation errors (see below). The executable is unsigned; keep Windows security protections enabled. GitHub’s separate “Source code” archives are for developers and do not include the ready-to-run model pack.
+
 ## Current capabilities
 
 The installed-model integration offers English routes for 19 provider-listed African language options. The long-term goal is 120 distinct African languages; that coverage is not implemented.
@@ -27,10 +40,6 @@ The executable is target/release/lugha-desk.exe. For offline translation, place 
 - Runtime: [llama.cpp b11932 Windows x64 CPU release](https://github.com/ggml-org/llama.cpp/releases/tag/b11932). Keep llama-server.exe and its required runtime DLLs in runtime/. Preserve vendor notices and follow applicable runtime prerequisites.
 - The model publisher declares Apache-2.0 for the weights. Teacher and dataset terms are separate. See LICENSING.md for component licenses and packaging requirements.
 
-## Downloads
-
-Packaged application downloads have not been published. GitHub's automatically generated source archives contain source, not a bundled ready-to-run model pack. See LICENSING.md for confirmed component licenses and the Windows runtime requirement.
-
 ## Privacy
 
 No translation history is intentionally saved. The app uses an ephemeral authenticated 127.0.0.1 model server, no proxy, no redirects and no cloud fallback. Native --offline mode is not an OS firewall sandbox. Closing the app terminates its worker/model process tree.
@@ -38,3 +47,4 @@ No translation history is intentionally saved. The app uses an ephemeral authent
 ## License and contribution
 
 Original application source is MIT; see LICENSE. Third-party model/runtime/binary terms remain separate. See CONTRIBUTING.md. No affiliation, endorsement or translation-quality certification is claimed.
+
