@@ -1,55 +1,19 @@
 #![windows_subsystem = "windows"]
-use std::{cell::RefCell,io::Write, path::PathBuf, process::{Command,Stdio}, sync::{mpsc,Arc,atomic::{AtomicBool,Ordering}}, time::{Duration,Instant}};
-use std::os::windows::{io::AsRawHandle,process::CommandExt};
+use std::{cell::RefCell,path::PathBuf, sync::{mpsc,Arc,Mutex,atomic::{AtomicBool,Ordering}}, time::Instant};
 use lugha_desk::{validate,wide,routes};
 mod native;
-use windows_sys::Win32::{Foundation::*,Graphics::Gdi::*,System::{JobObjects::*,LibraryLoader::GetModuleHandleW},UI::WindowsAndMessaging::*};
+mod worker;
+use windows_sys::Win32::{Foundation::*,Graphics::Gdi::*,System::LibraryLoader::GetModuleHandleW,UI::WindowsAndMessaging::*};
 use windows_sys::Win32::UI::{Controls::EM_SETLIMITTEXT,Input::KeyboardAndMouse::{EnableWindow,SetFocus}};
 
 fn app_dir()->Result<PathBuf,String> {
     let exe=std::env::current_exe().map_err(|_|"Cannot locate application.")?;
     exe.parent().map(|p|p.to_owned()).ok_or("Cannot locate the extracted application folder.".into())
 }
-struct Job(HANDLE);
-impl Drop for Job {fn drop(&mut self){unsafe{CloseHandle(self.0);}}}
-fn run(direction:&str,text:&str,cancel:Arc<AtomicBool>)->Result<String,String> {
-    validate(direction,text)?;
-    let mut child=Command::new(std::env::current_exe().map_err(|_|"Cannot locate this executable.")?)
-        .arg("--native-worker").arg(direction)
-        .creation_flags(0x08000000).stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped())
-        .spawn().map_err(|_|"Cannot start the native Rust worker.")?;
-    // Worker waits for stdin EOF: it cannot spawn the model before job assignment.
-    let job_result=unsafe {
-        let h=CreateJobObjectW(std::ptr::null(),std::ptr::null());
-        if h.is_null(){None}else{
-            let job=Job(h);
-            let mut limits:JOBOBJECT_EXTENDED_LIMIT_INFORMATION=std::mem::zeroed();
-            limits.BasicLimitInformation.LimitFlags=JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
-            if SetInformationJobObject(h,JobObjectExtendedLimitInformation,&limits as *const _ as _,std::mem::size_of_val(&limits) as u32)==0
-                || AssignProcessToJobObject(h,child.as_raw_handle() as HANDLE)==0 {None}else{Some(job)}
-        }
-    };
-    let _job=match job_result {Some(j)=>j,None=>{let _=child.kill();let _=child.wait();return Err("Windows could not isolate the model process. Translation was not started.".into());}};
-    let sent=child.stdin.take().ok_or("Worker input unavailable.")?.write_all(text.as_bytes());
-    if sent.is_err(){return Err("Cannot pass text to the local worker.".into());}
-    let deadline=Instant::now()+Duration::from_secs(330);
-    loop {
-        if cancel.load(Ordering::Relaxed){return Err("Translation cancelled.".into());}
-        if Instant::now()>deadline{return Err("Translation timed out. Try a shorter sentence.".into());}
-        match child.try_wait(){Ok(Some(_))=>break,Ok(None)=>std::thread::sleep(Duration::from_millis(100)),Err(_)=>return Err("Cannot monitor local inference.".into())}
-    }
-    let out=child.wait_with_output().map_err(|_|"Cannot read local inference output.")?;
-    if !out.status.success(){
-        let message=String::from_utf8_lossy(&out.stderr).trim().to_owned();
-        return Err(if message.is_empty(){"Local translation failed.".into()}else{message});
-    }
-    let result=String::from_utf8(out.stdout).map_err(|_|"Invalid UTF-8 output.")?;
-    if result.trim().is_empty(){return Err("The model returned no translation.".into());}
-    Ok(result)
-}
+enum Event { Progress(String), Finished(Result<String,String>) }
 
 struct Ui {direction:HWND,input:HWND,output:HWND,button:HWND,coverage:HWND,status:HWND,warning:HWND,in_label:HWND,out_label:HWND,
-    receiver:RefCell<Option<mpsc::Receiver<Result<String,String>>>>,cancel:RefCell<Arc<AtomicBool>>}
+    receiver:RefCell<Option<mpsc::Receiver<Event>>>,cancel:RefCell<Arc<AtomicBool>>,session:Arc<Mutex<Option<worker::Worker>>>,started:RefCell<Option<Instant>>,phase:RefCell<String>}
 unsafe fn text(h:HWND,s:&str){SetWindowTextW(h,wide(s).as_ptr());}
 unsafe fn control(parent:HWND,class:&str,value:&str,style:u32,id:usize)->HWND {
     let h=CreateWindowExW(0,wide(class).as_ptr(),wide(value).as_ptr(),WS_CHILD|WS_VISIBLE|style,0,0,10,10,parent,id as HMENU,GetModuleHandleW(std::ptr::null()),std::ptr::null());
@@ -84,24 +48,36 @@ unsafe extern "system" fn wndproc(hwnd:HWND,msg:u32,wp:usize,lp:isize)->isize {
             MessageBoxW(hwnd,wide("KENYA\nSwahili and Somali: model installed; quality not certified.\nGĩkũyũ, Dholuo, Kikamba: native model integration pending.\nOther Kenyan language varieties need individual model checks.\n\nSOUTH AFRICA\nisiZulu, isiXhosa, Sesotho, Setswana, Afrikaans: installed experimental routes.\nSepedi, Xitsonga, Tshivenda, siSwati, Southern isiNdebele: model integration pending.\n\n19 model language options are installed. 120 distinct African languages is the long-term goal. A menu entry or a fluent output does not establish translation accuracy.").as_ptr(),wide("Language coverage — installed versus pending").as_ptr(),MB_OK);0
         },
         WM_COMMAND if wp&0xffff==1 && (wp>>16)==0=>{
-            if u.receiver.borrow().is_some(){return 0;}
+            if u.receiver.borrow().is_some(){
+                u.cancel.borrow().store(true,Ordering::Relaxed);text(u.status,"Cancelling local translation…");return 0;
+            }
             let n=GetWindowTextLengthW(u.input) as usize;let mut buf=vec![0u16;n+1];GetWindowTextW(u.input,buf.as_mut_ptr(),buf.len() as i32);
             let source=String::from_utf16_lossy(&buf[..n]);
             let catalogue=routes();let index=SendMessageW(u.direction,CB_GETCURSEL,0,0);
             let Some((direction,_))=catalogue.get(index as usize).cloned()else{text(u.status,"Select an installed language route.");return 0;};
             if let Err(e)=validate(&direction,&source){text(u.status,&e);return 0;}
             let (tx,rx)=mpsc::channel();u.receiver.replace(Some(rx));let cancel=Arc::new(AtomicBool::new(false));u.cancel.replace(cancel.clone());
-            text(u.output,"");text(u.status,"Loading and translating locally… Please wait. Close the window to cancel.");
-            EnableWindow(u.button,0);EnableWindow(u.direction,0);EnableWindow(u.input,0);
-            std::thread::spawn(move||{let result=run(&direction,&source,cancel);let _=tx.send(result);});0
+            u.started.replace(Some(Instant::now()));u.phase.replace("Starting local worker".into());
+            text(u.output,"");text(u.status,"Starting local worker… 0 s");text(u.button,"Cancel");
+            EnableWindow(u.direction,0);EnableWindow(u.input,0);
+            let session=u.session.clone();
+            std::thread::spawn(move||{
+                let result=match session.lock(){Ok(mut session)=>worker::run(&mut session,&direction,&source,cancel,|phase|{let _=tx.send(Event::Progress(phase.into()));}),Err(_)=>Err("Local worker unavailable. Reopen Lugha Desk.".into())};
+                let _=tx.send(Event::Finished(result));
+            });0
         },
         WM_TIMER=>{
-            let result=u.receiver.borrow().as_ref().map(|rx|rx.try_recv());
-            let completed=match result{Some(Ok(r))=>Some(r),Some(Err(mpsc::TryRecvError::Disconnected))=>Some(Err("Translation worker stopped unexpectedly.".into())),_=>None};
+            let event=u.receiver.borrow().as_ref().map(|rx|rx.try_recv());
+            let completed=match event{
+                Some(Ok(Event::Progress(phase)))=>{u.phase.replace(phase);None},
+                Some(Ok(Event::Finished(r)))=>Some(r),
+                Some(Err(mpsc::TryRecvError::Disconnected))=>Some(Err("Local worker stopped. Choose Translate to retry.".into())),_=>None};
             if let Some(result)=completed {
-                u.receiver.replace(None);
-                match result{Ok(s)=>{text(u.output,&s);text(u.status,"Done locally. Check the meaning carefully before using this translation.");},Err(e)=>text(u.status,&e)}
-                EnableWindow(u.button,1);EnableWindow(u.direction,1);EnableWindow(u.input,1);
+                u.receiver.replace(None);u.started.replace(None);
+                match result{Ok(s)=>{text(u.output,&s);text(u.status,"Done locally. Model stays ready until you close Lugha Desk.");},Err(e)=>text(u.status,&e)}
+                text(u.button,"Translate offline");EnableWindow(u.direction,1);EnableWindow(u.input,1);
+            }else if let Some(start)=*u.started.borrow(){
+                let phase=u.phase.borrow().clone();text(u.status,&format!("{phase}… {} s · Cancel to stop",start.elapsed().as_secs()));
             }0
         },
         _=>DefWindowProcW(hwnd,msg,wp,lp)
@@ -126,7 +102,7 @@ unsafe fn gui()->Result<(),String>{
         warning:control(hwnd,"STATIC","Experimental model: meaning errors remain. Additional languages are not independently validated.\r\n19 model language options installed; 120 African languages is a future goal. See coverage for missing local languages.",0,5),
         status:control(hwnd,"STATIC","Python-free · max 600 characters · no history saved",0,6),
         in_label:control(hwnd,"STATIC","Your text",0,7),out_label:control(hwnd,"STATIC","Translation — review before use",0,8),
-        receiver:RefCell::new(None),cancel:RefCell::new(Arc::new(AtomicBool::new(false)))});
+        receiver:RefCell::new(None),cancel:RefCell::new(Arc::new(AtomicBool::new(false))),session:Arc::new(Mutex::new(None)),started:RefCell::new(None),phase:RefCell::new(String::new())});
     if [u.direction,u.input,u.output,u.button,u.coverage,u.warning,u.status,u.in_label,u.out_label].iter().any(|h|h.is_null()){DestroyWindow(hwnd);return Err("Cannot create application controls.".into());}
     let ptr=Box::into_raw(u);SetWindowLongPtrW(hwnd,GWLP_USERDATA,ptr as isize);layout(hwnd,&*ptr);SetTimer(hwnd,1,150,None);
     ShowWindow(hwnd,SW_SHOW);SetFocus(input);
@@ -135,6 +111,10 @@ unsafe fn gui()->Result<(),String>{
 }
 fn main(){
     let args:Vec<String>=std::env::args().collect();
+    if args.get(1).map(String::as_str)==Some("--session-worker") {
+        let result=app_dir().and_then(|dir|native::serve(&dir,std::io::stdin().lock(),std::io::stdout().lock()));
+        if result.is_err(){std::process::exit(2);}return;
+    }
     if args.get(1).map(String::as_str)==Some("--native-worker") {
         use std::io::Read;let mut source=String::new();
         if std::io::stdin().take(8193).read_to_string(&mut source).is_err(){eprintln!("Invalid UTF-8 input.");std::process::exit(2);}
@@ -147,6 +127,6 @@ fn main(){
     if args.get(1).map(String::as_str)==Some("--translate") {
         use std::io::Read;let mut source=String::new();
         if std::io::stdin().take(8193).read_to_string(&mut source).is_err(){eprintln!("Invalid UTF-8 input.");std::process::exit(2);}
-        match run(args.get(2).map(String::as_str).unwrap_or(""),&source,Arc::new(AtomicBool::new(false))){Ok(s)=>print!("{s}"),Err(e)=>{eprintln!("{e}");std::process::exit(2);}}
+        match worker::run(&mut None,args.get(2).map(String::as_str).unwrap_or(""),&source,Arc::new(AtomicBool::new(false)),|_|{}){Ok(s)=>print!("{s}"),Err(e)=>{eprintln!("{e}");std::process::exit(2);}}
     }else if let Err(e)=unsafe{gui()}{unsafe{MessageBoxW(std::ptr::null_mut(),wide(&e).as_ptr(),wide("Offline Translation").as_ptr(),MB_OK|MB_ICONERROR);}}
 }
