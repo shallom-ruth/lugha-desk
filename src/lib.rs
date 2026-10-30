@@ -77,3 +77,5 @@ mod tests {
         assert!(validate("sw-en", &"é".repeat(600)).is_ok());
     }
 }
+
+pub mod greetings;
