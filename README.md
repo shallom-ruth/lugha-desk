@@ -8,9 +8,9 @@ Offline translation for African languages, built in Rust for Windows x64. “Lug
 
 ## Download and Windows setup
 
-[Download the free Windows launcher, about 22.5 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.0-preview/Lugha-Desk-Launcher-0.3.0-startup-fix-Windows-x64.exe)
+[Download the free Windows launcher, about 22.5 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.1-preview/Lugha-Desk-Launcher-Greeting-Candidate-Windows-x64.exe)
 
-[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.0-preview)
+[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.1-preview)
 
 1. Open the downloaded launcher on Windows 10 or 11, x64.
 
@@ -26,6 +26,12 @@ This is an experimental preview with known translation errors. The executable is
 
 [Previous ZIP download, retained as a fallback](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.2.0/Lugha-Desk-0.2.0-Windows-x64.zip). Extract the entire ZIP before opening its app and keep the model and runtime folders together. Do not run inside the ZIP.
 
+Greeting dictionary
+
+Six directional greeting entries now cover English and Kinyarwanda, Amharic and Malagasy. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
+
+Previous launcher: https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.0-preview
+
 ## Current capabilities
 
 The installed-model integration offers English routes for 19 provider-listed African language options. The long-term goal is 120 distinct African languages; that coverage is not implemented.
@@ -38,7 +44,7 @@ The corrected launcher passed 13 normal Rust tests and its completed model reope
 
 ## Build from source
 
-Matching launcher and app source, including generated runtime resources, is available in [Lugha Desk 0.3.0 Source](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.0-preview/Lugha-Desk-0.3.0-Source.zip). This developer archive is not needed to install the app. GitHub’s automatic source archives do not contain the ready to run launcher.
+Matching launcher and app source, including generated runtime resources, is available in [Greeting correction source archive](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.1-preview/Lugha-Desk-Greeting-Candidate-Source.zip). This developer archive is not needed to install the app. GitHub’s automatic source archives do not contain the ready to run launcher.
 
 Use a Rust Windows x64 toolchain and its linker prerequisites:
 
@@ -62,4 +68,5 @@ No translation history is intentionally saved. The app uses an ephemeral authent
 ## License and contribution
 
 Original application source is MIT; see LICENSE. Third-party model/runtime/binary terms remain separate. See CONTRIBUTING.md. No affiliation, endorsement or translation-quality certification is claimed.
+
 
