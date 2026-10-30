@@ -1,0 +1,44 @@
+[
+  {
+    "direction": "en-rw",
+    "source": "Good morning",
+    "target": "Mwaramutse.",
+    "review": "reference-checked; fluent review pending",
+    "reference": "https://files.peacecorps.gov/multimedia/audio/languagelessons/rwanda/RW_Kinyarwanda_Language_Lessons.pdf"
+  },
+  {
+    "direction": "rw-en",
+    "source": "Mwaramutse",
+    "target": "Good morning.",
+    "review": "reference-checked; fluent review pending",
+    "reference": "https://files.peacecorps.gov/multimedia/audio/languagelessons/rwanda/RW_Kinyarwanda_Language_Lessons.pdf"
+  },
+  {
+    "direction": "en-am",
+    "source": "Good morning",
+    "target": "\u12a5\u1295\u12f0\u121d\u1295 \u12a0\u12f0\u1229?",
+    "review": "respectful morning form; fluent review pending",
+    "reference": "https://www.livelingua.com/peace-corps/Amharic/Amharic%20Peace%20Corps%20Language%20Manual-2015.pdf"
+  },
+  {
+    "direction": "am-en",
+    "source": "\u12a5\u1295\u12f0\u121d\u1295 \u12a0\u12f0\u1229",
+    "target": "Good morning.",
+    "review": "idiomatic morning greeting; fluent review pending",
+    "reference": "https://www.livelingua.com/peace-corps/Amharic/Amharic%20Peace%20Corps%20Language%20Manual-2015.pdf"
+  },
+  {
+    "direction": "en-mg",
+    "source": "How are you",
+    "target": "Manao ahoana?",
+    "review": "reference-checked; fluent review pending",
+    "reference": "https://motmalgache.org/bins/teny1/manaoahoana?w=manaoahoana"
+  },
+  {
+    "direction": "mg-en",
+    "source": "Manao ahoana",
+    "target": "How are you?",
+    "review": "greeting use; fluent review pending",
+    "reference": "https://motmalgache.org/bins/teny1/manaoahoana?w=manaoahoana"
+  }
+]
