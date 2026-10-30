@@ -97,6 +97,7 @@ impl Engine {
 }
 pub fn translate(dir:&Path,direction:&str,text:&str)->Result<String,String>{
     lugha_desk::validate(direction,text)?;
+    if let Some(greeting)=lugha_desk::greetings::lookup(direction,text){return Ok(greeting.to_owned());}
     Engine::load(dir,&mut |_|{})?.translate(direction,text,&mut |_|{})
 }
 
@@ -114,6 +115,7 @@ pub fn serve(dir:&Path,mut input:impl std::io::BufRead,mut output:impl std::io::
         let mut progress=|phase:&str|{let _=writeln!(output,"{}",serde_json::json!({"phase":phase}));let _=output.flush();};
         let result=(||{
             lugha_desk::validate(direction,text)?;
+            if let Some(greeting)=lugha_desk::greetings::lookup(direction,text){return Ok(greeting.to_owned());}
             if engine.is_none(){engine=Some(Engine::load(dir,&mut progress)?);}
             engine.as_mut().unwrap().translate(direction,text,&mut progress)
         })();
@@ -159,4 +161,5 @@ pub fn serve(dir:&Path,mut input:impl std::io::BufRead,mut output:impl std::io::
     }
     #[test]fn key_is_random_hex(){let a=random_key().unwrap();let b=random_key().unwrap();assert_eq!(a.len(),64);assert_ne!(a,b);assert!(a.bytes().all(|c|c.is_ascii_hexdigit()));}
 }
+
 

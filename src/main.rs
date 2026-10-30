@@ -74,7 +74,7 @@ unsafe extern "system" fn wndproc(hwnd:HWND,msg:u32,wp:usize,lp:isize)->isize {
                 Some(Err(mpsc::TryRecvError::Disconnected))=>Some(Err("Local worker stopped. Choose Translate to retry.".into())),_=>None};
             if let Some(result)=completed {
                 u.receiver.replace(None);u.started.replace(None);
-                match result{Ok(s)=>{text(u.output,&s);text(u.status,"Done locally. Model stays ready until you close Lugha Desk.");},Err(e)=>text(u.status,&e)}
+                match result{Ok(s)=>{text(u.output,&s);text(u.status,"Done locally.");},Err(e)=>text(u.status,&e)}
                 text(u.button,"Translate offline");EnableWindow(u.direction,1);EnableWindow(u.input,1);
             }else if let Some(start)=*u.started.borrow(){
                 let phase=u.phase.borrow().clone();text(u.status,&format!("{phase}… {} s · Cancel to stop",start.elapsed().as_secs()));
@@ -130,3 +130,4 @@ fn main(){
         match worker::run(&mut None,args.get(2).map(String::as_str).unwrap_or(""),&source,Arc::new(AtomicBool::new(false)),|_|{}){Ok(s)=>print!("{s}"),Err(e)=>{eprintln!("{e}");std::process::exit(2);}}
     }else if let Err(e)=unsafe{gui()}{unsafe{MessageBoxW(std::ptr::null_mut(),wide(&e).as_ptr(),wide("Offline Translation").as_ptr(),MB_OK|MB_ICONERROR);}}
 }
+
