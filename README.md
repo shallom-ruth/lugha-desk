@@ -1,5 +1,9 @@
 # Lugha Desk
 
+Developed by Ruth Shallom.
+
+[Project website: download, tests and limitations](https://shallom-ruth.github.io/lugha-desk.html)
+
 Offline translation for African languages, built in Rust for Windows x64. “Lugha” means language in Swahili. No Python or R installation is required by end users; R is used for testing. No cloud translation or paid API.
 
 ## Download and Windows setup
