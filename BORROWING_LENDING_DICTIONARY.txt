@@ -1,0 +1,18 @@
+Borrowing and lending dictionary
+
+This candidate adds three user-reviewed sentence pairs, six directional entries. It does not retrain or replace the model.
+
+I borrowed a ladder from Rehema.
+Niliazima ngazi kutoka kwa Rehema.
+
+I lent a ladder to Rehema.
+Nilimwazimisha Rehema ngazi.
+
+Rehema has returned the ladder.
+Rehema amerudisha ngazi.
+
+Each pair works in both directions between English and Swahili. Matching covers the whole message and preserves case. Surrounding or repeated whitespace and one optional final full stop are tolerated. Different names, negation, questions, quantities and longer sentences are not dictionary matches. No automatic name substitution or individual-word replacement occurs.
+
+Matched phrases use the reviewed dictionary without starting the model. Unmatched text uses the existing offline model and can still contain meaning errors, including borrowing and lending errors. These six entries do not establish general translation accuracy. Existing reference-checked greetings remain; provisional Lingala greetings remain excluded.
+
+Review basis: Ruth approved G02-01, G02-02 and G02-04 in this project. This is user-reviewed correction data, not an independently validated language benchmark. No development examples or unreviewed phrases are included.

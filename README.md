@@ -8,9 +8,9 @@ Lugha Desk is free, open-source Windows software developed by Ruth Shallom for o
 
 ## Download and Windows setup
 
-[Download the free Windows launcher, about 22.5 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.1-preview/Lugha-Desk-Launcher-Greeting-Candidate-Windows-x64.exe)
+[Download the free Windows launcher, about 22.5 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.2-preview/Lugha-Desk-Launcher-Phrase-Candidate-Windows-x64.exe)
 
-[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.1-preview)
+[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.2-preview)
 
 1. Open the downloaded launcher on Windows 10 or 11, x64.
 
@@ -32,6 +32,27 @@ Six directional greeting entries now cover English and Kinyarwanda, Amharic and 
 
 Previous launcher: https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.0-preview
 
+Borrowing and lending dictionary
+
+This candidate adds three user-reviewed sentence pairs, six directional entries. It does not retrain or replace the model.
+
+I borrowed a ladder from Rehema.
+Niliazima ngazi kutoka kwa Rehema.
+
+I lent a ladder to Rehema.
+Nilimwazimisha Rehema ngazi.
+
+Rehema has returned the ladder.
+Rehema amerudisha ngazi.
+
+Each pair works in both directions between English and Swahili. Matching covers the whole message and preserves case. Surrounding or repeated whitespace and one optional final full stop are tolerated. Different names, negation, questions, quantities and longer sentences are not dictionary matches. No automatic name substitution or individual-word replacement occurs.
+
+Matched phrases use the reviewed dictionary without starting the model. Unmatched text uses the existing offline model and can still contain meaning errors, including borrowing and lending errors. These six entries do not establish general translation accuracy. Existing reference-checked greetings remain; provisional Lingala greetings remain excluded.
+
+Review basis: Ruth approved G02-01, G02-02 and G02-04 in this project. This is user-reviewed correction data, not an independently validated language benchmark. No development examples or unreviewed phrases are included.
+
+Previous greeting launcher: https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.1-preview
+
 ## Current capabilities
 
 The installed-model integration offers English routes for 19 provider-listed African language options. The long-term goal is 120 distinct African languages; that coverage is not implemented.
@@ -44,7 +65,7 @@ The corrected launcher passed 13 normal Rust tests and its completed model reope
 
 ## Build from source
 
-Matching launcher and app source, including generated runtime resources, is available in [Greeting correction source archive](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.1-preview/Lugha-Desk-Greeting-Candidate-Source.zip). This developer archive is not needed to install the app. GitHub’s automatic source archives do not contain the ready to run launcher.
+Matching launcher and app source, including generated runtime resources, is available in [Phrase correction source archive](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.2-preview/Lugha-Desk-Phrase-Candidate-Source.zip). This developer archive is not needed to install the app. GitHub’s automatic source archives do not contain the ready to run launcher.
 
 Use a Rust Windows x64 toolchain and its linker prerequisites:
 
