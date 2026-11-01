@@ -68,6 +68,7 @@ impl Worker{
  }
 pub fn run(session:&mut Option<Worker>,direction:&str,text:&str,cancel:Arc<AtomicBool>,mut progress:impl FnMut(&str))->Result<String,String>{
  lugha_desk::validate(direction,text)?;
+ if let Some(phrase)=lugha_desk::phrases::lookup(direction,text){return Ok(phrase.to_owned());}
  if let Some(greeting)=lugha_desk::greetings::lookup(direction,text){return Ok(greeting.to_owned());}
  if session.is_none(){*session=Some(Worker::start()?);}
  let result=session.as_mut().unwrap().translate(direction,text,&cancel,&mut progress);
