@@ -98,6 +98,7 @@ impl Engine {
 pub fn translate(dir:&Path,direction:&str,text:&str)->Result<String,String>{
     lugha_desk::validate(direction,text)?;
     if let Some(greeting)=lugha_desk::greetings::lookup(direction,text){return Ok(greeting.to_owned());}
+    if let Some(phrase)=lugha_desk::phrases::lookup(direction,text){return Ok(phrase.to_owned());}
     Engine::load(dir,&mut |_|{})?.translate(direction,text,&mut |_|{})
 }
 
@@ -116,6 +117,7 @@ pub fn serve(dir:&Path,mut input:impl std::io::BufRead,mut output:impl std::io::
         let result=(||{
             lugha_desk::validate(direction,text)?;
             if let Some(greeting)=lugha_desk::greetings::lookup(direction,text){return Ok(greeting.to_owned());}
+            if let Some(phrase)=lugha_desk::phrases::lookup(direction,text){return Ok(phrase.to_owned());}
             if engine.is_none(){engine=Some(Engine::load(dir,&mut progress)?);}
             engine.as_mut().unwrap().translate(direction,text,&mut progress)
         })();

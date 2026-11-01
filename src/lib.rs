@@ -79,3 +79,4 @@ mod tests {
 }
 
 pub mod greetings;
+pub mod phrases;
