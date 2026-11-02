@@ -84,7 +84,13 @@ The model publisher declares Apache-2.0 for the weights. Teacher and dataset ter
 
 ## Privacy
 
-No translation history is intentionally saved. The app uses an ephemeral authenticated 127.0.0.1 model server, no proxy, no redirects and no cloud fallback. Native --offline mode is not an OS firewall sandbox. Closing the app terminates its worker/model process tree.
+Lugha Desk translates text on your computer after the model has been downloaded. The reviewed v0.3.2 app code sends translation requests to a local model server on the same computer, with no online translation fallback. We found no analytics, account registration or automatic translation-history saving in that code.
+
+Setup needs internet access to download the model from Hugging Face. Download providers can receive normal connection information, such as your IP address. Opening download or support websites also uses your browser and those websites’ services.
+
+During a translation test on 2 November 2026, the connection-monitor screenshots showed only local connections for the monitored app processes. This was a limited TCP check, not a complete security audit: brief connections, other network protocols and third-party component behaviour were not fully ruled out. The earlier packet capture was inconclusive. Translation text exists temporarily in memory, and Windows may manage memory or crash data separately.
+
+These findings apply to the reviewed v0.3.2 preview and do not guarantee every future version or certify the app as malware-free.
 
 ## License and contribution
 
