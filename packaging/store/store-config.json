@@ -1,0 +1,54 @@
+{
+  "store_id": "9NVZBTHPBR1C",
+  "app_preview_version": "0.3.4-preview",
+  "identity": {
+    "name": "RuthShallom.LughaDesk",
+    "publisher": "CN=417167AF-8330-486F-8BD2-5C96DFDA0EE8",
+    "publisher_display_name": "Ruth Shallom",
+    "version": "1.0.0.0",
+    "architecture": "x64"
+  },
+  "app_id": "LughaDesk",
+  "windows": {
+    "min_version": "10.0.19041.0",
+    "max_tested": "10.0.26100.0"
+  },
+  "model": {
+    "file": "TranslatePsy-AfriSLM-0.8B-Q8_0-imat.gguf",
+    "bytes": 1082015808,
+    "sha256": "b5056635be0c9bb832f0c964dc063bd4b4462e253f9f9d94eebf0aa0960b7798",
+    "revision": "55220bcc74bed219ad9db9ab378f6aae31850974",
+    "url": "https://huggingface.co/qvac/TranslatePsy-AfriSLM-0.8B-Q8-GGUF/resolve/55220bcc74bed219ad9db9ab378f6aae31850974/TranslatePsy-AfriSLM-0.8B-Q8_0-imat.gguf"
+  },
+  "notices_files": [
+    "APP_LICENSING.md",
+    "BORROWING_LENDING_DICTIONARY.txt",
+    "CODE_SIGNING.md",
+    "CONTRIBUTING.md",
+    "GREETING_DICTIONARY.md",
+    "INSTALLATION.md",
+    "LICENSE",
+    "LICENSE-LLVM-OpenMP",
+    "LICENSE-app-code-MIT.txt",
+    "LICENSING.md",
+    "README.md",
+    "THIRD_PARTY_NOTICES.md",
+    "model-runtime/ATTRIBUTIONS.md",
+    "model-runtime/LICENSE-APACHE-2.0.txt",
+    "model-runtime/README.md",
+    "model-runtime/download-manifest.json",
+    "model-runtime/llama-LICENSE",
+    "rust/itoa-1.0.18/LICENSE-APACHE",
+    "rust/itoa-1.0.18/LICENSE-MIT",
+    "rust/memchr-2.8.3/LICENSE-MIT",
+    "rust/serde_core-1.0.229/LICENSE-APACHE",
+    "rust/serde_core-1.0.229/LICENSE-MIT",
+    "rust/serde_json-1.0.154/LICENSE-APACHE",
+    "rust/serde_json-1.0.154/LICENSE-MIT",
+    "rust/windows-link-0.2.1/license-apache-2.0",
+    "rust/windows-link-0.2.1/license-mit",
+    "rust/windows-sys-0.61.2/license-apache-2.0",
+    "rust/windows-sys-0.61.2/license-mit",
+    "rust/zmij-1.0.23/LICENSE-MIT"
+  ]
+}
