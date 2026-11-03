@@ -15,6 +15,32 @@ pub fn lookup(direction: &str, text: &str) -> Option<&'static str> {
 }
 #[cfg(test)] mod tests {
  use super::*;
+ #[test] fn recorded_greeting_regressions() {
+  for (d,s,t) in [
+   ("en-wo","Good morning.","Jamm nga fanaan."),
+   ("wo-en","Jamm nga fanaan","Good morning."),
+   ("en-wo","How are you?","Nanga def?"),
+   ("wo-en","Nanga def?","How are you?"),
+   ("wo-en","Na nga def?","How are you?"),
+   ("en-lg","Good morning.","Wasuze otya?"),
+   ("lg-en","Wasuze otya?","Good morning."),
+   ("en-yo","Good morning.","Ẹ káàárọ̀."),
+   ("yo-en","Ẹ káàárọ̀.","Good morning."),
+  ] {
+   assert_eq!(lookup(d,s),Some(t),"{d}: {s}");
+   assert_eq!(lookup(d,&s.to_lowercase()),Some(t),"lowercase {d}: {s}");
+   assert_eq!(lookup(d,&s.to_uppercase()),Some(t),"uppercase {d}: {s}");
+  }
+ }
+ #[test] fn new_greetings_do_not_replace_sentence_fragments() {
+  for (d,s) in [
+   ("en-wo","Good morning, Mary."),("wo-en","Nanga def? Hello."),
+   ("en-lg","She said good morning."),("lg-en","Wasuze otya, Rehema?"),
+   ("en-yo","Good\nmorning"),("yo-en","Ẹ káàárọ̀, bàbá."),
+   ("en-yo","Not a good morning."),("en-wo","Good afternoon."),
+   ("en-ha","Good morning."),
+  ] { assert_eq!(lookup(d,s),None,"{d}: {s}"); }
+ }
  #[test] fn six_reference_checked_routes() {
   for (d,s,t) in [
    ("en-rw","Good morning","Mwaramutse."),("rw-en","Mwaramutse","Good morning."),
