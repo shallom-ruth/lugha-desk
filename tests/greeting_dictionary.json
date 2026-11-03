@@ -16,13 +16,13 @@
   {
     "direction": "en-am",
     "source": "Good morning",
-    "target": "\u12a5\u1295\u12f0\u121d\u1295 \u12a0\u12f0\u1229?",
+    "target": "እንደምን አደሩ?",
     "review": "respectful morning form; fluent review pending",
     "reference": "https://www.livelingua.com/peace-corps/Amharic/Amharic%20Peace%20Corps%20Language%20Manual-2015.pdf"
   },
   {
     "direction": "am-en",
-    "source": "\u12a5\u1295\u12f0\u121d\u1295 \u12a0\u12f0\u1229",
+    "source": "እንደምን አደሩ",
     "target": "Good morning.",
     "review": "idiomatic morning greeting; fluent review pending",
     "reference": "https://www.livelingua.com/peace-corps/Amharic/Amharic%20Peace%20Corps%20Language%20Manual-2015.pdf"
@@ -40,5 +40,68 @@
     "target": "How are you?",
     "review": "greeting use; fluent review pending",
     "reference": "https://motmalgache.org/bins/teny1/manaoahoana?w=manaoahoana"
+  },
+  {
+    "direction": "en-wo",
+    "source": "Good morning",
+    "target": "Jamm nga fanaan.",
+    "reference": "https://fsi-languages.yojik.eu/languages/PeaceCorps/Wolof/MR_Wolof_Language_Lessons.pdf",
+    "review": "reference-checked; fluent review pending; Mauritania teaching form; varieties may differ"
+  },
+  {
+    "direction": "wo-en",
+    "source": "Jamm nga fanaan",
+    "target": "Good morning.",
+    "reference": "https://fsi-languages.yojik.eu/languages/PeaceCorps/Wolof/MR_Wolof_Language_Lessons.pdf",
+    "review": "reference-checked; fluent review pending; idiomatic morning greeting"
+  },
+  {
+    "direction": "en-wo",
+    "source": "How are you",
+    "target": "Nanga def?",
+    "reference": "https://fsi-languages.yojik.eu/languages/PeaceCorps/Wolof/MR_Wolof_Language_Lessons.pdf",
+    "review": "reference-checked; fluent review pending; standalone greeting"
+  },
+  {
+    "direction": "wo-en",
+    "source": "Nanga def",
+    "target": "How are you?",
+    "reference": "https://fsi-languages.yojik.eu/languages/PeaceCorps/Wolof/MR_Wolof_Language_Lessons.pdf",
+    "review": "reference-checked; fluent review pending; standalone greeting"
+  },
+  {
+    "direction": "wo-en",
+    "source": "Na nga def",
+    "target": "How are you?",
+    "reference": "https://cdn.who.int/media/docs/default-source/eios/2024-eios-gtm-programme-booklet_english.pdf?sfvrsn=b30b4778_5",
+    "review": "reference-checked; fluent review pending; documented spacing variant"
+  },
+  {
+    "direction": "en-lg",
+    "source": "Good morning",
+    "target": "Wasuze otya?",
+    "reference": "https://lugandalusogalugwerecommission.com/381335032/381335040/381335040_3014782",
+    "review": "reference-checked; fluent review pending; singular morning greeting; no gendered title added"
+  },
+  {
+    "direction": "lg-en",
+    "source": "Wasuze otya",
+    "target": "Good morning.",
+    "reference": "https://lugandalusogalugwerecommission.com/381335032/381335040/381335040_3014782",
+    "review": "reference-checked; fluent review pending; idiomatic greeting; literally asks about the night"
+  },
+  {
+    "direction": "en-yo",
+    "source": "Good morning",
+    "target": "Ẹ káàárọ̀.",
+    "reference": "https://coerll.utexas.edu/yemi/pdfs/yy_ch1.pdf",
+    "review": "reference-checked; fluent review pending; respectful form; tone marks retained"
+  },
+  {
+    "direction": "yo-en",
+    "source": "Ẹ káàárọ̀",
+    "target": "Good morning.",
+    "reference": "https://coerll.utexas.edu/yemi/pdfs/yy_ch1.pdf",
+    "review": "reference-checked; fluent review pending; respectful morning form"
   }
 ]
