@@ -9,9 +9,10 @@ Lugha Desk is free, open-source Windows software developed by Ruth Shallom for o
 ## Code signing policy
 
 See [CODE_SIGNING.md](CODE_SIGNING.md) for maintainer roles, build provenance,
-privacy links and the proposed SignPath signing process. Free SignPath Foundation
-signing is being prepared; acceptance is pending and existing downloads remain
-unsigned. See [installation and removal](INSTALLATION.md) for setup changes.
+privacy links and the proposed SignPath signing process. SignPath Foundation declined the application at this time on 3 November 2026
+because the project needs more independent public recognition. No certificate
+was issued; public preview downloads remain unsigned. The Foundation welcomes
+a later application once broader recognition is established. See [installation and removal](INSTALLATION.md) for setup changes.
 
 The `Windows unsigned review build` GitHub Actions workflow builds both the app
 and the recovered launcher from this repository. Review artifacts are unsigned
@@ -30,11 +31,11 @@ end users. The launcher packaging script does not embed model weights.
 
 ## Download and Windows setup
 
-[Download the free Windows launcher, about 22.5 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.2-preview/Lugha-Desk-Launcher-Phrase-Candidate-Windows-x64.exe)
+[Download the free Windows launcher, about 21.6 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.3-preview/Lugha-Desk-Launcher-Windows-x64.exe)
 
-[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.2-preview)
+[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.3-preview)
 
-1. Open the downloaded launcher on Windows 10 or 11, x64.
+1. Close Lugha Desk and any setup window, then open the new launcher on Windows 10 or 11, x64. A complete existing model is verified and reused while the app is updated.
 
 2. Choose Download model. This is a one time 1.08 GB download. You can Pause and Resume setup. Allow at least 1.3 GB free disk space.
 
@@ -50,7 +51,7 @@ This is an experimental preview with known translation errors. The executable is
 
 Greeting dictionary
 
-Six directional greeting entries now cover English and Kinyarwanda, Amharic and Malagasy. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
+The v0.3.3-preview release extends the six earlier greeting entries with four phrase pairs for Wolof, Luganda and Yoruba. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. New entries await fluent-speaker review and are included in the v0.3.3-preview download above. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
 
 Previous launcher: https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.0-preview
 
@@ -87,7 +88,7 @@ The corrected launcher passed 13 normal Rust tests and its completed model reope
 
 ## Build from source
 
-Matching launcher and app source, including generated runtime resources, is available in [Phrase correction source archive](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.2-preview/Lugha-Desk-Phrase-Candidate-Source.zip). This developer archive is not needed to install the app. GitHub’s automatic source archives do not contain the ready to run launcher.
+Matching launcher and app source, including generated runtime resources, is available in [v0.3.3 matching source archive](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.3-preview/Lugha-Desk-0.3.3-preview-Source.zip). This developer archive is not needed to install the app. GitHub’s automatic source archives do not contain the ready to run launcher.
 
 Use a Rust Windows x64 toolchain and its linker prerequisites:
 

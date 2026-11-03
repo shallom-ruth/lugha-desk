@@ -1,10 +1,17 @@
 # Code signing policy
 
-Lugha Desk is preparing an application for free code signing through
-[SignPath.io](https://signpath.io/) and [SignPath Foundation](https://signpath.org/).
-Acceptance and production signing are pending. Existing v0.3.2-preview downloads
-are unsigned. This page does not claim that SignPath has accepted or endorsed
-Lugha Desk.
+Lugha Desk applied for free code signing through SignPath Foundation. On
+3 November 2026, the Foundation declined the application at this time because
+the project did not yet show sufficient independent public recognition and
+community engagement. The reply explicitly said this was not a judgment on the
+quality or potential of the work, and invited a later application after broader
+recognition. No Foundation certificate has been issued.
+
+Public preview downloads, including v0.3.3-preview, are unsigned. A paid signing
+subscription has not been purchased. Lugha Desk remains free, open source and
+offline after model setup. Do not claim SignPath acceptance or endorsement.
+
+The design below describes a possible future signing process if approved.
 
 ## People and approval
 

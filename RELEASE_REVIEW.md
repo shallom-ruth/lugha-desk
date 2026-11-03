@@ -1,6 +1,6 @@
 # Packaged release checklist
 
-Component licenses are documented in LICENSING.md. Original application source is MIT. Experimental packaged downloads are published on GitHub Releases; existing v0.3.2-preview downloads are unsigned. New CI artifacts remain unsigned review builds until the signing checks below pass.
+Component licenses are documented in LICENSING.md. Original application source is MIT. Experimental packaged downloads are published on GitHub Releases; public preview downloads, including v0.3.3-preview, are unsigned. SignPath Foundation declined the application at this time on 3 November 2026 because more independent public recognition is needed. CI artifacts are unsigned review builds; publishing an unsigned experimental preview requires explicit maintainer authorization. The checks below apply before describing any release as signed.
 
 - Exclude the Microsoft runtime DLLs copied from System32 in the private evaluation bundle; use the official Microsoft free redistributable/prerequisite route or another verified authorized method.
 - Include the Apache-2.0 model license and publisher attribution/provenance notices; keep teacher/dataset terms distinct.
