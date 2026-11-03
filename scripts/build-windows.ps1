@@ -53,6 +53,6 @@ try {
         ((Get-FileHash $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant()) + '  ' + $_.Name
     }
     $hashes | Set-Content (Join-Path $output 'SHA256SUMS.txt') -Encoding ascii
-    'UNSIGNED REVIEW BUILD. SignPath acceptance and production signing are pending.' | Set-Content (Join-Path $output 'UNSIGNED.txt')
+    'UNSIGNED REVIEW BUILD. No signing certificate has been issued; see CODE_SIGNING.md for current status.' | Set-Content (Join-Path $output 'UNSIGNED.txt')
     Write-Output "Unsigned review artifacts: $output"
 } finally { Pop-Location }

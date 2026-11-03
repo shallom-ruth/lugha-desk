@@ -1,7 +1,7 @@
 Greeting dictionary
 
-The dictionary covers complete, standalone greetings. The current development
-candidate adds four phrase pairs (eight directions, with a Wolof spacing alias)
+The dictionary covers complete, standalone greetings. The v0.3.3-preview release
+adds four phrase pairs (eight directions, with a Wolof spacing alias)
 to the original six directional entries:
 
 English to Kinyarwanda: Good morning. -> Mwaramutse.
