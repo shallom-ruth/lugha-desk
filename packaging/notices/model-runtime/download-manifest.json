@@ -1,0 +1,21 @@
+{
+  "model": "qvac/TranslatePsy-AfriSLM-0.8B-Q8-GGUF",
+  "revision": "55220bcc74bed219ad9db9ab378f6aae31850974",
+  "runtime_tag": "b11932",
+  "files": [
+    {
+      "file": "llama-b11932-bin-win-cpu-x64.zip",
+      "bytes": 24255745,
+      "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11932/llama-b11932-bin-win-cpu-x64.zip",
+      "sha256": "1b57df69f58dc1bfab83c4743a443b1c4973e7f83283ac7a39239e496815d0a3",
+      "publisher_sha256": "1b57df69f58dc1bfab83c4743a443b1c4973e7f83283ac7a39239e496815d0a3"
+    },
+    {
+      "file": "TranslatePsy-AfriSLM-0.8B-Q8_0-imat.gguf",
+      "bytes": 1082015808,
+      "url": "https://huggingface.co/qvac/TranslatePsy-AfriSLM-0.8B-Q8-GGUF/resolve/55220bcc74bed219ad9db9ab378f6aae31850974/TranslatePsy-AfriSLM-0.8B-Q8_0-imat.gguf",
+      "sha256": "b5056635be0c9bb832f0c964dc063bd4b4462e253f9f9d94eebf0aa0960b7798",
+      "publisher_sha256": "b5056635be0c9bb832f0c964dc063bd4b4462e253f9f9d94eebf0aa0960b7798"
+    }
+  ]
+}

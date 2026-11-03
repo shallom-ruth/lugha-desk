@@ -8,3 +8,9 @@
 *.gguf
 .env
 .env.*
+
+/launcher/target/
+/launcher/assets/
+/launcher/src/assets.rs
+/launcher/assets-report.json
+__pycache__/

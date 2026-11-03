@@ -19,9 +19,9 @@ The model card expressly states that the model is Apache-2.0 and separately iden
 
 ## Public Windows package requirements
 
-The current private evaluation ZIP contains Microsoft runtime DLLs copied from the local Windows installation. That private ZIP must not be uploaded unchanged as the public release. A public package should omit those copied Microsoft DLLs and direct users to Microsoft's official free Visual C++ Redistributable as a prerequisite, or use a verified authorized redistribution method. No installation or license acceptance is performed on a user's behalf.
+An early private evaluation ZIP contained Microsoft runtime DLLs copied from the local Windows installation. That private ZIP must not be uploaded unchanged as a public release. The source-controlled launcher build selects only the allowlisted upstream runtime files and uses Microsoft's official Visual C++ Redistributable as an external prerequisite. No Microsoft prerequisite installation or license acceptance is performed on a user's behalf.
 
-Include the app, native-runtime, model and dependency license/notice files with any authorized packaged distribution. Do not describe the entire bundle as exclusively MIT. There are no application license fees or paid translation APIs in this design. No packaged application release has been published.
+Include the app, native-runtime, model and dependency license/notice files with any authorized packaged distribution. Do not describe the entire bundle as exclusively MIT. There are no application license fees or paid translation APIs in this design. Experimental Windows downloads are published on GitHub Releases. Existing v0.3.2-preview downloads are unsigned; [code signing](CODE_SIGNING.md) is being prepared.
 
 ## Primary sources
 

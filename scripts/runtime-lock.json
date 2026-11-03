@@ -1,0 +1,14 @@
+{
+  "tag": "b11932",
+  "url": "https://github.com/ggml-org/llama.cpp/releases/download/b11932/llama-b11932-bin-win-cpu-x64.zip",
+  "sha256": "1b57df69f58dc1bfab83c4743a443b1c4973e7f83283ac7a39239e496815d0a3",
+  "files": [
+    "ggml-base.dll", "ggml-cpu-alderlake.dll", "ggml-cpu-cannonlake.dll",
+    "ggml-cpu-cascadelake.dll", "ggml-cpu-cooperlake.dll", "ggml-cpu-haswell.dll",
+    "ggml-cpu-icelake.dll", "ggml-cpu-ivybridge.dll", "ggml-cpu-piledriver.dll",
+    "ggml-cpu-sandybridge.dll", "ggml-cpu-sapphirerapids.dll", "ggml-cpu-skylakex.dll",
+    "ggml-cpu-sse42.dll", "ggml-cpu-x64.dll", "ggml-cpu-zen4.dll", "ggml.dll",
+    "libomp.dll", "llama-common.dll", "llama-server-impl.dll", "llama-server.exe",
+    "llama.dll", "mtmd.dll"
+  ]
+}
