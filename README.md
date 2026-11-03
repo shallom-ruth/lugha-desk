@@ -50,7 +50,7 @@ This is an experimental preview with known translation errors. The executable is
 
 Greeting dictionary
 
-Six directional greeting entries now cover English and Kinyarwanda, Amharic and Malagasy. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
+The development candidate extends the six released greeting entries with four phrase pairs for Wolof, Luganda and Yoruba. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. New entries await fluent-speaker review and are not included in the current public v0.3.2 download. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
 
 Previous launcher: https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.0-preview
 

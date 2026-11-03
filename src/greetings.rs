@@ -2,7 +2,7 @@
 pub fn lookup(direction: &str, text: &str) -> Option<&'static str> {
  if text.contains(['\n','\r']) { return None; }
  let text=text.trim().trim_end_matches(['.','!','?']).trim();
- let key=text.split(|c| c==' ' || c=='\t').filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ").to_ascii_lowercase();
+ let key=text.split(|c| c==' ' || c=='\t').filter(|s| !s.is_empty()).collect::<Vec<_>>().join(" ").to_lowercase();
  match (direction,key.as_str()) {
   ("en-rw","good morning") => Some("Mwaramutse."),
   ("rw-en","mwaramutse") => Some("Good morning."),
@@ -10,6 +10,15 @@ pub fn lookup(direction: &str, text: &str) -> Option<&'static str> {
   ("am-en","\u{12a5}\u{1295}\u{12f0}\u{121d}\u{1295} \u{12a0}\u{12f0}\u{1229}") => Some("Good morning."),
   ("en-mg","how are you") => Some("Manao ahoana?"),
   ("mg-en","manao ahoana") => Some("How are you?"),
+  // GREETING_DICTIONARY.md records the teaching references and usage limits.
+  ("en-wo","good morning") => Some("Jamm nga fanaan."),
+  ("wo-en","jamm nga fanaan") => Some("Good morning."),
+  ("en-wo","how are you") => Some("Nanga def?"),
+  ("wo-en","nanga def" | "na nga def") => Some("How are you?"),
+  ("en-lg","good morning") => Some("Wasuze otya?"),
+  ("lg-en","wasuze otya") => Some("Good morning."),
+  ("en-yo","good morning") => Some("Ẹ káàárọ̀."),
+  ("yo-en","ẹ káàárọ̀") => Some("Good morning."),
   _ => None,
  }
 }
