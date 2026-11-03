@@ -10,6 +10,9 @@ permissions:
   contents: read
 
 jobs:
+  store_package:
+    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'store/msix'
+    uses: ./.github/workflows/store-package.yml
   build:
     runs-on: windows-2022
     timeout-minutes: 30
