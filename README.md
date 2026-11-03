@@ -6,6 +6,28 @@ Developed by Ruth Shallom.
 
 Lugha Desk is free, open-source Windows software developed by Ruth Shallom for offline text translation involving African languages. It currently offers 19 experimental language options; accuracy is still being evaluated. Built in Rust. “Lugha” means language in Swahili. No Python or R installation is required by end users; R is used for testing. No cloud translation or paid API.
 
+## Code signing policy
+
+See [CODE_SIGNING.md](CODE_SIGNING.md) for maintainer roles, build provenance,
+privacy links and the proposed SignPath signing process. Free SignPath Foundation
+signing is being prepared; acceptance is pending and existing downloads remain
+unsigned. See [installation and removal](INSTALLATION.md) for setup changes.
+
+The `Windows unsigned review build` GitHub Actions workflow builds both the app
+and the recovered launcher from this repository. Review artifacts are unsigned
+and are not automatically published as releases.
+
+To build both on Windows with the Visual C++ build tools and Windows SDK installed:
+
+```powershell
+./scripts/build-windows.ps1
+```
+
+The pinned Rust toolchain and Python 3.13 are developer prerequisites. The build
+downloads and verifies the pinned runtime, generates launcher resources and puts
+review artifacts in `dist/unsigned-<version>/`. Python and Rust are not needed by
+end users. The launcher packaging script does not embed model weights.
+
 ## Download and Windows setup
 
 [Download the free Windows launcher, about 22.5 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.2-preview/Lugha-Desk-Launcher-Phrase-Candidate-Windows-x64.exe)
