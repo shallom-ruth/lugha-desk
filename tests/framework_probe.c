@@ -2,6 +2,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <wchar.h>
 
 static int load_from(const wchar_t *directory, const wchar_t *name, int required) {
