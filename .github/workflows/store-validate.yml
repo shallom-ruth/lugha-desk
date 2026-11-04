@@ -32,6 +32,22 @@ jobs:
           }
           $report | ConvertTo-Json -Depth 4 | Set-Content target/store-validation/environment.json -Encoding utf8
           $report | ConvertTo-Json -Depth 4
+      - name: Install official Windows App Certification Kit in the disposable runner
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'winsdksetup.exe'
+          # Microsoft SDK downloads: stable 10.0.26100.9457, September 2026.
+          # https://learn.microsoft.com/en-us/windows/apps/windows-sdk/downloads
+          curl.exe --fail --location --silent --show-error --retry 3 --proto '=https' --proto-redir '=https' --output $setup 'https://go.microsoft.com/fwlink/?linkid=2382321'
+          if ($LASTEXITCODE -ne 0) { throw 'Official SDK setup download failed' }
+          if ((Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'b0bdbad38ae74c40ccae8cdbcf229807627fba2bc3100be28301c4ba884f755e') { throw 'SDK setup digest mismatch' }
+          $signature = Get-AuthenticodeSignature $setup
+          if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notlike '*O=Microsoft Corporation*') { throw 'SDK setup Microsoft signature validation failed' }
+          $log = Join-Path (Resolve-Path target/store-validation).Path 'wack-setup.log'
+          $process = Start-Process $setup -ArgumentList @('/features','OptionId.WindowsSoftwareLogoToolkit','/quiet','/norestart','/ceip','off','/log',$log) -WindowStyle Hidden -Wait -PassThru
+          if ($process.ExitCode -notin @(0,3010)) { throw "WACK setup failed: $($process.ExitCode); inspect setup log" }
+          $kit = @(Get-ChildItem (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits/10') -Filter appcert.exe -Recurse)
+          if (-not $kit.Count) { throw 'SDK setup did not provide appcert.exe' }
+          $kit | ForEach-Object { $_.FullName }
       - name: Download the existing package and validate its source
         env:
           GH_TOKEN: ${{ github.token }}
