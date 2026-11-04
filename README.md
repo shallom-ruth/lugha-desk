@@ -1,5 +1,7 @@
 # Lugha Desk
 
+<p><img src="assets/lugha-desk-logo.png" alt="Lugha Desk logo" width="120" height="120"></p>
+
 Developed by Ruth Shallom.
 
 [Project website: download, tests and limitations](https://shallom-ruth.github.io/lugha-desk.html)
@@ -28,9 +30,9 @@ end users. The launcher packaging script does not embed model weights.
 
 ## Download and Windows setup
 
-[Download the free Windows launcher, about 21.6 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.3-preview/Lugha-Desk-Launcher-Windows-x64.exe)
+[Download the free Windows launcher, about 21.6 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.4-preview/Lugha-Desk-Launcher-Windows-x64.exe)
 
-[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.3-preview)
+[Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.4-preview)
 
 1. Close Lugha Desk and any setup window, then open the new launcher on Windows 10 or 11, x64. A complete existing model is verified and reused while the app is updated.
 
@@ -48,7 +50,7 @@ This is an experimental preview with known translation errors. The executable is
 
 Greeting dictionary
 
-The v0.3.3-preview release extends the six earlier greeting entries with four phrase pairs for Wolof, Luganda and Yoruba. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. New entries await fluent-speaker review and are included in the v0.3.3-preview download above. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
+The v0.3.3-preview release extends the six earlier greeting entries with four phrase pairs for Wolof, Luganda and Yoruba. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. New entries await fluent-speaker review and are retained in the download above. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
 
 Previous launcher: https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.0-preview
 
@@ -85,7 +87,7 @@ The corrected launcher passed 13 normal Rust tests and its completed model reope
 
 ## Build from source
 
-Matching launcher and app source, including generated runtime resources, is available in [v0.3.3 matching source archive](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.3-preview/Lugha-Desk-0.3.3-preview-Source.zip). This developer archive is not needed to install the app. GitHub’s automatic source archives do not contain the ready to run launcher.
+Matching application, launcher and logo source is available in the [v0.3.4 source archive](https://github.com/shallom-ruth/lugha-desk/archive/refs/tags/v0.3.4-preview.zip). The documented Windows build downloads and verifies the pinned runtime and generates the launcher resources. This developer archive is not needed to install the app; download the ready-to-run launcher above.
 
 Use a Rust Windows x64 toolchain and its linker prerequisites:
 
