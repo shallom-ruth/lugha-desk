@@ -4,7 +4,7 @@ version = 4
 
 [[package]]
 name = "lugha-desk-launcher"
-version = "0.3.3-preview"
+version = "0.3.4-preview"
 dependencies = [
  "windows-sys",
 ]

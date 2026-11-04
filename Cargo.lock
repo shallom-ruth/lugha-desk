@@ -34,7 +34,7 @@ dependencies = [
 
 [[package]]
 name = "lugha-desk"
-version = "0.3.3-preview"
+version = "0.3.4-preview"
 dependencies = [
  "serde_json",
  "windows-sys",

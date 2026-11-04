@@ -5,11 +5,27 @@ on:
     branches: [main, 'signpath/**']
   pull_request:
   workflow_dispatch:
+    inputs:
+      store_validation_run:
+        description: 'Existing successful Store package run to test on an isolated Windows 11 runner (blank builds a package)'
+        type: string
+        default: ''
 
 permissions:
   contents: read
 
 jobs:
+  store_package:
+    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'store/msix' && inputs.store_validation_run == ''
+    uses: ./.github/workflows/store-package.yml
+  store_validation:
+    if: github.event_name == 'workflow_dispatch' && github.ref_name == 'store/msix' && inputs.store_validation_run != ''
+    permissions:
+      contents: read
+      actions: read
+    uses: ./.github/workflows/store-validate.yml
+    with:
+      package_run_id: ${{ inputs.store_validation_run }}
   build:
     runs-on: windows-2022
     timeout-minutes: 30
