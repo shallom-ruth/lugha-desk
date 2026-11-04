@@ -13,6 +13,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'App tests failed' }
     & cargo build --release --locked --target x86_64-pc-windows-msvc
     if ($LASTEXITCODE -ne 0) { throw 'App build failed' }
+    & $Python tests/test_windows_manifest.py target/x86_64-pc-windows-msvc/release/lugha-desk.exe
+    if ($LASTEXITCODE -ne 0) { throw 'Actual EXE DPI/security manifest failed' }
     & $Python tests/test_greetings.py target/x86_64-pc-windows-msvc/release/lugha-desk.exe
     if ($LASTEXITCODE -ne 0) { throw 'Greeting integration checks failed' }
     $lock = Get-Content scripts/runtime-lock.json -Raw | ConvertFrom-Json
