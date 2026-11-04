@@ -26,6 +26,7 @@ jobs:
           $report = [ordered]@{
             os = (Get-CimInstance Win32_OperatingSystem).Caption
             architecture = $env:PROCESSOR_ARCHITECTURE
+            wack_host = $(if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'blocked: Microsoft SDK WACK installer provides x86/amd64 binaries only; requires native x64 validation' } else { 'eligible; kit presence and results must still be checked' })
             framework_packages = @(Get-AppxPackage Microsoft.VCLibs.140.00.UWPDesktop | ForEach-Object { $_.PackageFullName })
             signtool = @(Get-ChildItem $sdkRoot -Filter signtool.exe -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
             wack = @(Get-ChildItem $sdkRoot -Filter appcert.exe -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
@@ -33,6 +34,9 @@ jobs:
           $report | ConvertTo-Json -Depth 4 | Set-Content target/store-validation/environment.json -Encoding utf8
           $report | ConvertTo-Json -Depth 4
       - name: Install official Windows App Certification Kit in the disposable runner
+        # The signed SDK installer explicitly excludes ARM64 for WACK components.
+        # Do not mistake its successful no-op exit for an installed certification kit.
+        if: runner.arch == 'X64'
         run: |
           $setup = Join-Path $env:RUNNER_TEMP 'winsdksetup.exe'
           # Microsoft SDK downloads: stable 10.0.26100.9457, September 2026.
