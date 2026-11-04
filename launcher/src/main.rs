@@ -66,7 +66,7 @@ fn run()->Result<(),String>{unsafe{
  if GetLastError()==ERROR_ALREADY_EXISTS{return Err("Lugha Desk setup is already open. Continue in its existing window.".into())}
  let root=if cfg!(debug_assertions){std::env::var_os("LUGHA_PREVIEW_ROOT").map(PathBuf::from).map(Ok).unwrap_or_else(shell::root)?}else{shell::root()?};let _file_lock=setup::acquire_lock(&root)?;let instance=GetModuleHandleW(std::ptr::null());let class=wide("LughaDeskSetupWindow");
  let controls=INITCOMMONCONTROLSEX{dwSize:std::mem::size_of::<INITCOMMONCONTROLSEX>() as u32,dwICC:ICC_PROGRESS_CLASS};InitCommonControlsEx(&controls);
- let mut wc:WNDCLASSW=std::mem::zeroed();wc.hInstance=instance;wc.lpfnWndProc=Some(procedure);wc.lpszClassName=class.as_ptr();wc.hCursor=LoadCursorW(std::ptr::null_mut(),IDC_ARROW);wc.hbrBackground=(COLOR_WINDOW+1) as HBRUSH;
+ let mut wc:WNDCLASSW=std::mem::zeroed();wc.hInstance=instance;wc.lpfnWndProc=Some(procedure);wc.lpszClassName=class.as_ptr();wc.hIcon=LoadIconW(instance,1usize as *const u16);wc.hCursor=LoadCursorW(std::ptr::null_mut(),IDC_ARROW);wc.hbrBackground=(COLOR_WINDOW+1) as HBRUSH;
  if RegisterClassW(&wc)==0{return Err("Cannot create setup window class.".into())}
  let hwnd=CreateWindowExW(0,class.as_ptr(),wide("Lugha Desk — Offline setup").as_ptr(),WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_MINIMIZEBOX,CW_USEDEFAULT,CW_USEDEFAULT,700,440,std::ptr::null_mut(),std::ptr::null_mut(),instance,std::ptr::null());
  if hwnd.is_null(){return Err("Cannot open setup window.".into())}
