@@ -49,12 +49,13 @@ try {
     $report.package_source_revision = $build.source_revision
     $report.original_unsigned_sha256 = $build.package_sha256
     $report.install_location = $installed.InstallLocation
-    # Block non-loopback connections for both the app/worker and native server.
+    # Use Windows' documented Internet scope, preserving the local worker connection.
     foreach ($program in @((Join-Path $installed.InstallLocation 'lugha-desk.exe'),(Join-Path $installed.InstallLocation 'runtime/llama-server.exe'))) {
         $ruleName = 'Lugha-CI-offline-' + [guid]::NewGuid().ToString('N')
-        New-NetFirewallRule -Name $ruleName -DisplayName $ruleName -Direction Outbound -Action Block -Program $program -RemoteAddress @('0.0.0.0-126.255.255.255','128.0.0.0-255.255.255.255','::/0') | Out-Null
+        New-NetFirewallRule -Name $ruleName -DisplayName $ruleName -Direction Outbound -Action Block -Program $program -RemoteAddress Internet | Out-Null
         $rules += $ruleName
     }
+    $report.network_test_scope = 'Windows Firewall Internet keyword for installed app and server; LAN remains available. Not physical network disconnection.'
     $driver = Join-Path $PSScriptRoot 'test-store-context.ps1'
     Invoke-CommandInDesktopPackage -PackageFamilyName $installed.PackageFamilyName -AppId LughaDesk -Command "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -Args "-NoProfile -ExecutionPolicy Bypass -File `"$driver`" -InstallLocation `"$($installed.InstallLocation)`" -OutputDirectory `"$OutputDirectory`"" -PreventBreakaway
     $contextResult = Join-Path $OutputDirectory 'package-context.json'
@@ -63,7 +64,7 @@ try {
     if (-not (Test-Path $contextResult)) { throw 'Packaged context test did not return a report' }
     $context = Get-Content $contextResult -Raw | ConvertFrom-Json
     if ($context.status -ne 'passed') { throw "Packaged CLI test failed: $($context.error)" }
-    $report.packaged_cli = 'passed with non-loopback traffic blocked; outputs require language review'
+    $report.packaged_cli = 'passed with Internet traffic blocked; outputs require language review'
     # Direct user activation is separate from the debugging-context CLI checks.
     Start-Process explorer.exe -ArgumentList "shell:AppsFolder\$($installed.PackageFamilyName)!LughaDesk"
     $deadline = (Get-Date).AddSeconds(30)
