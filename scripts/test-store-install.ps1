@@ -48,7 +48,7 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Ephemeral test signing failed' }
     Add-AppxPackage -Path $testCopy -DependencyPath $frameworkPath
     $installed = Get-AppxPackage RuthShallom.LughaDesk
-    if ($installed.PackageFamilyName -ne 'RuthShallom.LughaDesk_mj1zfg7cgz4xj' -or $installed.Version.ToString() -ne '1.0.0.0') { throw 'Installed identity mismatch' }
+    if ($installed.PackageFamilyName -ne 'RuthShallom.LughaDesk_mj1zfg7cgz4xj' -or $installed.Version.ToString() -ne '1.0.1.0') { throw 'Installed identity mismatch' }
     $report.install = 'passed'
     $report.package_source_revision = $build.source_revision
     $report.original_unsigned_sha256 = $build.package_sha256
@@ -95,13 +95,13 @@ try {
     if ((Get-FileHash $updatedModel -Algorithm SHA256).Hash.ToLowerInvariant() -ne $build.model_sha256) { throw 'Updated package model hash mismatch' }
     $updateOutput = Join-Path $OutputDirectory 'updated-package'
     New-Item -ItemType Directory $updateOutput | Out-Null
-    Invoke-CommandInDesktopPackage -PackageFamilyName $installed.PackageFamilyName -AppId LughaDesk -Command "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -Args "-NoProfile -ExecutionPolicy Bypass -File `"$driver`" -InstallLocation `"$($installed.InstallLocation)`" -OutputDirectory `"$updateOutput`" -ExpectedVersion 1.0.0.1" -PreventBreakaway
+    Invoke-CommandInDesktopPackage -PackageFamilyName $installed.PackageFamilyName -AppId LughaDesk -Command "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -Args "-NoProfile -ExecutionPolicy Bypass -File `"$driver`" -InstallLocation `"$($installed.InstallLocation)`" -OutputDirectory `"$updateOutput`" -ExpectedVersion 1.0.1.1" -PreventBreakaway
     $updatedResult = Join-Path $updateOutput 'package-context.json'
     $deadline = (Get-Date).AddMinutes(12)
     while (-not (Test-Path $updatedResult) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 2 }
     if (-not (Test-Path $updatedResult)) { throw 'Updated package translation timed out' }
     if ((Get-Content $updatedResult -Raw | ConvertFrom-Json).status -ne 'passed') { throw 'Updated package translation failed' }
-    $report.update = 'test-only 1.0.0.0 to 1.0.0.1 deployment and three packaged CLI cases passed; production artifact unchanged'
+    $report.update = 'test-only 1.0.1.0 to 1.0.1.1 deployment and three packaged CLI cases passed; production artifact unchanged'
     if ((Get-FileHash $package[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant() -ne $build.package_sha256) { throw 'Original unsigned artifact changed during lifecycle tests' }
 } catch {
     $report.error = $_.Exception.Message

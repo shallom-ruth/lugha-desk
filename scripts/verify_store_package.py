@@ -30,7 +30,7 @@ def verify_package(package, payload):
         identity = ET.fromstring(archive.read('AppxManifest.xml')).find('{*}Identity')
         expected_identity = {'Name': 'RuthShallom.LughaDesk',
             'Publisher': 'CN=417167AF-8330-486F-8BD2-5C96DFDA0EE8',
-            'Version': '1.0.0.0', 'ProcessorArchitecture': 'x64'}
+            'Version': '1.0.1.0', 'ProcessorArchitecture': 'x64'}
         if identity is None or identity.attrib != expected_identity:
             raise ValueError('Package identity does not match the reserved Store product')
     return {'files_verified': len(report['files']),

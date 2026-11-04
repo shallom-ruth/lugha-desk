@@ -65,7 +65,7 @@ class StorePayloadTests(unittest.TestCase):
         self.output = self.root / 'payload'
         self.config = {
             'identity': {'name': 'RuthShallom.LughaDesk', 'publisher': PUBLISHER,
-                         'publisher_display_name': 'Ruth Shallom', 'version': '1.0.0.0', 'architecture': 'x64'},
+                         'publisher_display_name': 'Ruth Shallom', 'version': '1.0.1.0', 'architecture': 'x64'},
             'app_id': 'LughaDesk',
             'windows': {'min_version': '10.0.19041.0', 'max_tested': '10.0.26100.0'},
             'model': {'file': 'TranslatePsy-AfriSLM-0.8B-Q8_0-imat.gguf', 'bytes': 3,
@@ -89,7 +89,7 @@ class StorePayloadTests(unittest.TestCase):
         manifest = ET.parse(self.output / 'AppxManifest.xml').getroot()
         self.assertEqual(manifest.find(f'{{{F}}}Identity').attrib,
                          {'Name': 'RuthShallom.LughaDesk', 'Publisher': PUBLISHER,
-                          'Version': '1.0.0.0', 'ProcessorArchitecture': 'x64'})
+                          'Version': '1.0.1.0', 'ProcessorArchitecture': 'x64'})
         app = manifest.find(f'{{{F}}}Applications/{{{F}}}Application')
         self.assertEqual(app.attrib['Executable'], 'lugha-desk.exe')
         self.assertEqual(app.attrib['EntryPoint'], 'Windows.FullTrustApplication')
@@ -126,7 +126,7 @@ class StorePayloadTests(unittest.TestCase):
         self.build(config=config)
         identity = ET.parse(self.output / 'AppxManifest.xml').getroot().find(f'{{{F}}}Identity')
         self.assertEqual(identity.attrib, {'Name': 'RuthShallom.LughaDesk', 'Publisher': PUBLISHER,
-                                          'Version': '1.0.0.0', 'ProcessorArchitecture': 'x64'})
+                                          'Version': '1.0.1.0', 'ProcessorArchitecture': 'x64'})
 
     def test_same_size_corrupt_model_is_rejected_before_payload_creation(self):
         self.model.write_bytes(b'abd')
