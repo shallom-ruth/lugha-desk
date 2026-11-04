@@ -14,7 +14,7 @@ Obtaining and updating the Store package and required Microsoft framework uses M
 
 To report an incorrect or inappropriate translation, contact shalomruth90@gmail.com. The Coverage and support dialog displays the contact details and sends nothing automatically. Choose what to include in a report; avoid sharing passwords, identity documents, personal or confidential text. Sending email or visiting the project website/GitHub uses the services you choose and their privacy practices.
 
-If you contact the developer, the contact information and report you choose to send are used to investigate and respond. Reports are not automatically added to model training or posted publicly. The developer may keep a report while resolving it; contact the same address for a deletion request, subject to applicable retention obligations. Do not promise deletion of data held independently by email providers, GitHub or Microsoft.
+If you contact the developer, the contact information and report you choose to send are used to investigate and respond. Reports are not automatically added to model training or posted publicly. The developer may keep a report while resolving it; contact the same address for a deletion request, subject to applicable retention obligations. Email providers, GitHub and Microsoft independently manage data under their own policies.
 
 ## Licensing and responsibility
 
