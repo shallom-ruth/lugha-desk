@@ -33,7 +33,7 @@ an explicitly supplied model is never overwritten. No weights or signing keys
 belong in Git. End users need neither Rust nor Python.
 
 The package is Windows x64, minimum Windows build `10.0.19041.0`, Store deployment
-version `1.0.0.0`, app preview `0.3.4-preview`. The Store entry opens the app
+version `1.0.1.0`, app preview `0.3.4-preview`. The Store entry opens the app
 directly with its packaged model/runtime; it does not run the GitHub EXE setup.
 Store manages deployment/removal. Do not migrate or delete an existing GitHub
 installation/model automatically.
