@@ -4,6 +4,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include <psapi.h>
+
+static int verify_vc_origins(const wchar_t *framework) {
+    const wchar_t *prefixes[] = {L"vcruntime140", L"msvcp140", L"concrt140",
+        L"vcomp140", L"vccorlib140", L"vcamp140"};
+    HMODULE modules[1024];
+    DWORD bytes, length;
+    size_t index, prefix;
+    wchar_t actual[32768], expected[32768];
+    const wchar_t *name;
+    if (!K32EnumProcessModules(GetCurrentProcess(), modules, (DWORD)sizeof(modules), &bytes) ||
+        bytes > sizeof(modules)) return 6;
+    for (index = 0; index < bytes / sizeof(HMODULE); index++) {
+        length = GetModuleFileNameW(modules[index], actual, (DWORD)_countof(actual));
+        if (!length || length >= _countof(actual)) return 6;
+        name = wcsrchr(actual, L'\\');
+        name = name ? name + 1 : actual;
+        for (prefix = 0; prefix < _countof(prefixes); prefix++) {
+            if (_wcsnicmp(name, prefixes[prefix], wcslen(prefixes[prefix]))) continue;
+            if (swprintf_s(expected, _countof(expected), L"%ls\\%ls", framework, name) < 0) return 6;
+            if (_wcsicmp(actual, expected)) {
+                wprintf(L"FAIL: a transitive VC module came from outside the supplied framework: %ls\n", name);
+                return 7;
+            }
+            break;
+        }
+    }
+    return 0;
+}
 
 static int load_from(const wchar_t *directory, const wchar_t *name, int required) {
     wchar_t path[32768], actual[32768];
@@ -42,13 +71,15 @@ int wmain(int argc, wchar_t **argv) {
     if (!SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_USER_DIRS) ||
         !AddDllDirectory(argv[1]) || !AddDllDirectory(argv[2])) return 2;
     for (index = 0; index < _countof(framework); index++) {
-        result = load_from(argv[1], framework[index], index == 0 || index == 2);
+        result = load_from(argv[1], framework[index], index <= 2);
         if (result) return result;
     }
     for (index = 0; index < _countof(runtime); index++) {
         result = load_from(argv[2], runtime[index], 1);
         if (result) return result;
     }
+    result = verify_vc_origins(argv[1]);
+    if (result) return result;
     wprintf(L"PASS: pinned runtime DLLs load with the supplied Desktop framework.\n");
     return 0;
 }

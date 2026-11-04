@@ -12,3 +12,4 @@ if ($observed.install -ne 'passed' -or $observed.uninstall -notlike 'failed:*') 
 if (@(Get-AppxPackage RuthShallom.LughaDesk).Count) { throw 'Failure-path test did not clean its disposable package' }
 if ($childExit -eq 0) { throw 'Uninstall failure incorrectly returned process success' }
 'PASS: real retained-package failure was reported, returned nonzero, and was cleaned up.'
+exit 0 # The child failure above was expected, not this regression check's result.
