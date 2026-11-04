@@ -1,4 +1,5 @@
-param([Parameter(Mandatory)][string]$ArtifactDirectory, [Parameter(Mandatory)][string]$OutputDirectory)
+param([Parameter(Mandatory)][string]$ArtifactDirectory, [Parameter(Mandatory)][string]$OutputDirectory,
+    [switch]$ExerciseRemovalFailure)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 # Test certificates and package deployment are confined to an ephemeral hosted runner.
@@ -49,6 +50,7 @@ try {
     $report.package_source_revision = $build.source_revision
     $report.original_unsigned_sha256 = $build.package_sha256
     $report.install_location = $installed.InstallLocation
+    if ($ExerciseRemovalFailure) { return } # Exercise the real still-installed postcondition below.
     # Use Windows' documented Internet scope, preserving the local worker connection.
     foreach ($program in @((Join-Path $installed.InstallLocation 'lugha-desk.exe'),(Join-Path $installed.InstallLocation 'runtime/llama-server.exe'))) {
         $ruleName = 'Lugha-CI-offline-' + [guid]::NewGuid().ToString('N')
@@ -90,10 +92,14 @@ try {
     foreach ($rule in $rules) { Remove-NetFirewallRule -Name $rule -ErrorAction SilentlyContinue }
     if ($installed) {
         try {
-            Remove-AppxPackage -Package $installed.PackageFullName
+            if (-not $ExerciseRemovalFailure) { Remove-AppxPackage -Package $installed.PackageFullName }
             if (@(Get-AppxPackage RuthShallom.LughaDesk).Count) { throw 'Package remains after removal' }
             $report.uninstall = 'passed'
-        } catch { $report.uninstall = 'failed: ' + $_.Exception.Message }
+        } catch {
+            $report.uninstall = 'failed: ' + $_.Exception.Message
+            # Clean the deliberately retained package after observing the failure.
+            if ($ExerciseRemovalFailure) { Remove-AppxPackage -Package $installed.PackageFullName }
+        }
     }
     if ($certificate) {
         Remove-Item "Cert:\LocalMachine\TrustedPeople\$($certificate.Thumbprint)" -ErrorAction SilentlyContinue

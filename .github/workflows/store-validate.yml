@@ -47,6 +47,8 @@ jobs:
           $package = Get-Item target/store-review/*.msix
           if ((Get-FileHash $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant() -ne $report.package_sha256) { throw 'MSIX digest mismatch' }
           Copy-Item target/store-review/store-build-report.json target/store-validation/
+      - name: Verify failed removal cannot report success
+        run: ./tests/check_store_uninstall.ps1 -ArtifactDirectory target/store-review -OutputDirectory target/store-validation
       - name: Install and exercise the package in the disposable runner
         run: ./scripts/test-store-install.ps1 -ArtifactDirectory target/store-review -OutputDirectory target/store-validation
       - name: Upload observed package test evidence
