@@ -72,7 +72,16 @@ identity. The final replacement therefore uses 1.0.1.0, source
 `e32c72b029b0fbe48d9e3b7ac894b93a6ebfb1a454a1e86627a1bb6f81eeba16`.
 Build 41855066249 and downloaded deployment report 41863738757 cover that
 package; all 57 payload hashes and its embedded EXE manifest were verified
-locally. Its EXE hash differs from the native WACK-tested build, so the above
-report must not be described as an exact native 1.0.1.0 WACK run. Native
-installed-package GUI validation also remains separate from the ARM-hosted
-deployment tests and prior native unpackaged GUI checks.
+locally. Its EXE hash differs from the earlier WACK-tested build; that earlier
+report must not be described as an exact native 1.0.1.0 WACK run.
+
+A subsequent full native x64 rerun confirms the exact 1.0.1.0 package:
+APP_NAME RuthShallom.LughaDesk, APP_VERSION 1.0.1.0, PARTIAL_RUN FALSE,
+overall PASS and DPIAwarenessValidation PASS. The saved run context identifies
+the final input file, whose SHA256 matches the final MSIX above. The report
+contains 23 PASS results and optional Blocked executables FAIL. It was saved
+under an old 1.0.0.0 filename, so its actual identity and input context establish
+what was tested. The final XML and context have been preserved separately.
+Native installed-package GUI validation remains separate from this WACK run,
+the ARM-hosted deployment tests and prior native unpackaged GUI checks.
+No Microsoft Store certification or waiver is claimed.
