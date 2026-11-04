@@ -1,4 +1,5 @@
-param([Parameter(Mandatory)][string]$InstallLocation,[Parameter(Mandatory)][string]$OutputDirectory)
+param([Parameter(Mandatory)][string]$InstallLocation,[Parameter(Mandatory)][string]$OutputDirectory,
+    [ValidateSet('1.0.0.0','1.0.0.1')][string]$ExpectedVersion='1.0.0.0')
 $ErrorActionPreference = 'Stop'
 $result = [ordered]@{ status='failed'; context='debug process with package identity, not full GUI parity'; cases=@() }
 try {
@@ -21,7 +22,7 @@ public static class PackageIdentity {
 }
 '@
     $result.package_identity = [PackageIdentity]::Current()
-    if ($result.package_identity -notlike 'RuthShallom.LughaDesk_1.0.0.0_x64__mj1zfg7cgz4xj') { throw 'Unexpected debug process package identity' }
+    if ($result.package_identity -ne "RuthShallom.LughaDesk_${ExpectedVersion}_x64__mj1zfg7cgz4xj") { throw 'Unexpected debug process package identity' }
     foreach ($case in @(@('en-sw','Good morning.'),@('en-sw','The child reads a book.'),@('sw-en','Mtoto anasoma kitabu.'))) {
         $start = New-Object Diagnostics.ProcessStartInfo
         $start.FileName = Join-Path $InstallLocation 'lugha-desk.exe'

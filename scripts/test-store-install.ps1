@@ -15,6 +15,8 @@ $certificate = $null
 $installed = $null
 $rules = @()
 $removalFailure = $null
+$standalone = $null
+. (Join-Path $PSScriptRoot '../tests/store_lifecycle_helpers.ps1')
 try {
     if (@(Get-AppxPackage RuthShallom.LughaDesk).Count) { throw 'Refusing to modify an existing Lugha Desk installation' }
     $package = @(Get-ChildItem $ArtifactDirectory -Filter '*.msix' -File)
@@ -52,6 +54,8 @@ try {
     $report.original_unsigned_sha256 = $build.package_sha256
     $report.install_location = $installed.InstallLocation
     if ($ExerciseRemovalFailure) { return } # Exercise the real still-installed postcondition below.
+    $standalone = New-StandaloneStoreFixture $installed $OutputDirectory
+    $report.exe_coexistence = 'standalone EXE/model fixture in Unicode/space path translated while Store package installed; preservation after uninstall pending'
     # Use Windows' documented Internet scope, preserving the local worker connection.
     foreach ($program in @((Join-Path $installed.InstallLocation 'lugha-desk.exe'),(Join-Path $installed.InstallLocation 'runtime/llama-server.exe'))) {
         $ruleName = 'Lugha-CI-offline-' + [guid]::NewGuid().ToString('N')
@@ -86,6 +90,19 @@ try {
         $report.wack_exit_code = $LASTEXITCODE
         $report.wack = 'executed; inspect the complete XML report, exit code alone is not certification'
     } else { $report.wack = 'blocked: WACK is not installed on this runner' }
+    $installed = Install-StoreTestUpdate $package[0].FullName $certificate $signTool.FullName $frameworkPath $OutputDirectory
+    $updatedModel = Join-Path $installed.InstallLocation 'model/TranslatePsy-AfriSLM-0.8B-Q8_0-imat.gguf'
+    if ((Get-FileHash $updatedModel -Algorithm SHA256).Hash.ToLowerInvariant() -ne $build.model_sha256) { throw 'Updated package model hash mismatch' }
+    $updateOutput = Join-Path $OutputDirectory 'updated-package'
+    New-Item -ItemType Directory $updateOutput | Out-Null
+    Invoke-CommandInDesktopPackage -PackageFamilyName $installed.PackageFamilyName -AppId LughaDesk -Command "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe" -Args "-NoProfile -ExecutionPolicy Bypass -File `"$driver`" -InstallLocation `"$($installed.InstallLocation)`" -OutputDirectory `"$updateOutput`" -ExpectedVersion 1.0.0.1" -PreventBreakaway
+    $updatedResult = Join-Path $updateOutput 'package-context.json'
+    $deadline = (Get-Date).AddMinutes(12)
+    while (-not (Test-Path $updatedResult) -and (Get-Date) -lt $deadline) { Start-Sleep -Seconds 2 }
+    if (-not (Test-Path $updatedResult)) { throw 'Updated package translation timed out' }
+    if ((Get-Content $updatedResult -Raw | ConvertFrom-Json).status -ne 'passed') { throw 'Updated package translation failed' }
+    $report.update = 'test-only 1.0.0.0 to 1.0.0.1 deployment and three packaged CLI cases passed; production artifact unchanged'
+    if ((Get-FileHash $package[0].FullName -Algorithm SHA256).Hash.ToLowerInvariant() -ne $build.package_sha256) { throw 'Original unsigned artifact changed during lifecycle tests' }
 } catch {
     $report.error = $_.Exception.Message
     throw
@@ -106,6 +123,15 @@ try {
     if ($certificate) {
         Remove-Item "Cert:\LocalMachine\TrustedPeople\$($certificate.Thumbprint)" -ErrorAction SilentlyContinue
         Remove-Item "Cert:\CurrentUser\My\$($certificate.Thumbprint)" -ErrorAction SilentlyContinue
+    }
+    if ($standalone) {
+        try {
+            Assert-StandaloneStoreFixture $standalone $OutputDirectory
+            $report.exe_coexistence = 'standalone EXE/model fixture in Unicode/space path unchanged by Store update/uninstall; translation passed before and after. Not a GitHub launcher upgrade test.'
+        } catch {
+            $report.exe_coexistence = 'failed: ' + $_.Exception.Message
+            $removalFailure = $_.Exception
+        }
     }
     $report | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $OutputDirectory 'package-test-report.json') -Encoding utf8
     # Finish certificate cleanup and evidence writing, then fail the CI process.
