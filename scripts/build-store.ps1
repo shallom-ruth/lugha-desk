@@ -93,7 +93,7 @@ try {
         & $compiler /nologo /W4 /WX /MT /DUNICODE /D_UNICODE "/I$(Join-Path $tools.FullName 'include')" "/I$(Join-Path $sdkRoot ('Include/' + $sdk.Name + '/shared'))" "/I$(Join-Path $sdkRoot ('Include/' + $sdk.Name + '/um'))" "/I$(Join-Path $sdkRoot ('Include/' + $sdk.Name + '/ucrt'))" "/Fe:$probe" "/Fo:$(Join-Path $buildRoot 'framework-probe.obj')" tests/framework_probe.c /link "/LIBPATH:$(Join-Path $tools.FullName 'lib/x64')" "/LIBPATH:$(Join-Path $sdkRoot ('Lib/' + $sdk.Name + '/um/x64'))" "/LIBPATH:$(Join-Path $sdkRoot ('Lib/' + $sdk.Name + '/ucrt/x64'))" kernel32.lib
         if ($LASTEXITCODE -ne 0) { throw 'Native framework probe compile failed' }
     } finally { $env:PATH = $previousPath }
-    & $Python tests/check_framework_probe.py --probe $probe --framework $frameworkDllDirectory --runtime (Join-Path $runtimeStage 'runtime')
+    & $Python tests/check_framework_probe.py --probe $probe --framework $frameworkDllDirectory --runtime (Join-Path $runtimeStage 'runtime') --dumpbin (Join-Path $tools.FullName 'bin/Hostx64/x64/dumpbin.exe')
     if ($LASTEXITCODE -ne 0) { throw 'Pinned runtime and Store framework are incompatible; no Store package will be published' }
     $frameworkReport.probe_passed = $true
     $frameworkJson = Join-Path $buildRoot 'framework.json'

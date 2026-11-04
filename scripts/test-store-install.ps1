@@ -14,6 +14,7 @@ $report = [ordered]@{ install='not run'; activation='not run'; packaged_cli='not
 $certificate = $null
 $installed = $null
 $rules = @()
+$removalFailure = $null
 try {
     if (@(Get-AppxPackage RuthShallom.LughaDesk).Count) { throw 'Refusing to modify an existing Lugha Desk installation' }
     $package = @(Get-ChildItem $ArtifactDirectory -Filter '*.msix' -File)
@@ -97,6 +98,7 @@ try {
             $report.uninstall = 'passed'
         } catch {
             $report.uninstall = 'failed: ' + $_.Exception.Message
+            $removalFailure = $_.Exception
             # Clean the deliberately retained package after observing the failure.
             if ($ExerciseRemovalFailure) { Remove-AppxPackage -Package $installed.PackageFullName }
         }
@@ -106,4 +108,6 @@ try {
         Remove-Item "Cert:\CurrentUser\My\$($certificate.Thumbprint)" -ErrorAction SilentlyContinue
     }
     $report | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $OutputDirectory 'package-test-report.json') -Encoding utf8
+    # Finish certificate cleanup and evidence writing, then fail the CI process.
+    if ($removalFailure) { throw $removalFailure }
 }
