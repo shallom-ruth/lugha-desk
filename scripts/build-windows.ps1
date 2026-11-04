@@ -36,6 +36,8 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'Launcher tests failed' }
     & cargo build --release --locked --target x86_64-pc-windows-msvc --manifest-path launcher/Cargo.toml
     if ($LASTEXITCODE -ne 0) { throw 'Launcher build failed' }
+    & $Python tests/check_windows_icon.py target/x86_64-pc-windows-msvc/release/lugha-desk.exe launcher/target/x86_64-pc-windows-msvc/release/lugha-desk-launcher.exe
+    if ($LASTEXITCODE -ne 0) { throw 'Actual app/setup icon resources failed' }
     $version = (& $Python -c "import tomllib; print(tomllib.load(open('Cargo.toml','rb'))['package']['version'])").Trim()
     if ($LASTEXITCODE -ne 0) { throw 'Could not read release version' }
     $output = Join-Path $repo ('dist/unsigned-' + $version)

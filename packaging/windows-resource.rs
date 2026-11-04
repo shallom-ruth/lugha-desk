@@ -1,5 +1,5 @@
-// Build-time Windows PE metadata. No runtime dependency or product behavior change.
-use std::{env, fs, path::PathBuf, process::Command};
+// Build-time Windows PE metadata and the shared Lugha Desk app/setup icon.
+use std::{env, fs, io::Write, path::PathBuf, process::Command};
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
@@ -17,6 +17,8 @@ fn main() {
     // WM_DPICHANGED and scales its layout/font before declaring PerMonitorV2.
     let manifest = shared.parent().unwrap().join("app.manifest");
     println!("cargo:rerun-if-changed={}", manifest.display());
+    let icon = shared.parent().unwrap().join("../assets/lugha-desk.ico");
+    println!("cargo:rerun-if-changed={}", icon.display());
     let version = env::var("CARGO_PKG_VERSION").unwrap();
     let numeric: Vec<u16> = version.split('-').next().unwrap().split('.')
         .map(|part| part.parse().expect("Invalid release version")).collect();
@@ -56,8 +58,10 @@ BEGIN
  END
 END
 "#)).unwrap();
+    let icon_path = icon.to_str().unwrap().replace('\\', "\\\\");
+    writeln!(fs::OpenOptions::new().append(true).open(&source).unwrap(),
+        "1 ICON \"{icon_path}\"").unwrap();
     if !launcher {
-        use std::io::Write;
         let escaped = manifest.to_str().unwrap().replace('\\', "\\\\");
         writeln!(fs::OpenOptions::new().append(true).open(&source).unwrap(),
             "1 24 \"{escaped}\"").unwrap();

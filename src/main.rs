@@ -106,7 +106,7 @@ unsafe extern "system" fn wndproc(hwnd:HWND,msg:u32,wp:usize,lp:isize)->isize {
 unsafe fn gui()->Result<(),String>{
     let class=wide("LughaDeskWindow");let instance=GetModuleHandleW(std::ptr::null());
     let mut wc:WNDCLASSW=std::mem::zeroed();wc.lpfnWndProc=Some(wndproc);wc.hInstance=instance;wc.lpszClassName=class.as_ptr();
-    wc.hCursor=LoadCursorW(std::ptr::null_mut(),IDC_ARROW);wc.hbrBackground=(COLOR_WINDOW+1) as HBRUSH;
+    wc.hIcon=LoadIconW(instance,1usize as *const u16);wc.hCursor=LoadCursorW(std::ptr::null_mut(),IDC_ARROW);wc.hbrBackground=(COLOR_WINDOW+1) as HBRUSH;
     if RegisterClassW(&wc)==0{return Err("Cannot register the application window.".into());}
     let hwnd=CreateWindowExW(0,class.as_ptr(),wide("Lugha Desk").as_ptr(),WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT,CW_USEDEFAULT,dpi::pixels(900,GetDpiForSystem()),dpi::pixels(720,GetDpiForSystem()),std::ptr::null_mut(),std::ptr::null_mut(),instance,std::ptr::null());
