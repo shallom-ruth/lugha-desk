@@ -1,0 +1,59 @@
+name: Isolated Store package validation
+on:
+  workflow_call:
+    inputs:
+      package_run_id:
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate:
+    runs-on: windows-11-arm
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Inspect isolated Windows client environment
+        run: |
+          New-Item -ItemType Directory target/store-validation -Force | Out-Null
+          $sdkRoot = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits/10'
+          $report = [ordered]@{
+            os = (Get-CimInstance Win32_OperatingSystem).Caption
+            architecture = $env:PROCESSOR_ARCHITECTURE
+            framework_packages = @(Get-AppxPackage Microsoft.VCLibs.140.00.UWPDesktop | ForEach-Object { $_.PackageFullName })
+            signtool = @(Get-ChildItem $sdkRoot -Filter signtool.exe -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
+            wack = @(Get-ChildItem $sdkRoot -Filter appcert.exe -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
+          }
+          $report | ConvertTo-Json -Depth 4 | Set-Content target/store-validation/environment.json -Encoding utf8
+          $report | ConvertTo-Json -Depth 4
+      - name: Download the existing package and validate its source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_RUN_ID: ${{ inputs.package_run_id }}
+        run: |
+          if ($env:PACKAGE_RUN_ID -notmatch '^\d+$') { throw 'Expected a numeric workflow run ID' }
+          $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:PACKAGE_RUN_ID" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $run.conclusion -ne 'success' -or $run.head_branch -ne 'store/msix') { throw 'Expected a successful Store branch package run' }
+          gh run download $env:PACKAGE_RUN_ID --repo $env:GITHUB_REPOSITORY --name "Lugha-Desk-STORE-REVIEW-$($run.head_sha)" --dir target/store-review
+          if ($LASTEXITCODE -ne 0) { throw 'Package artifact download failed' }
+          $report = Get-Content target/store-review/store-build-report.json -Raw | ConvertFrom-Json
+          if ($report.source_revision -ne $run.head_sha) { throw 'Artifact/source revision mismatch' }
+          $package = Get-Item target/store-review/*.msix
+          if ((Get-FileHash $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant() -ne $report.package_sha256) { throw 'MSIX digest mismatch' }
+          Copy-Item target/store-review/store-build-report.json target/store-validation/
+      - name: Install and exercise the package in the disposable runner
+        run: ./scripts/test-store-install.ps1 -ArtifactDirectory target/store-review -OutputDirectory target/store-validation
+      - name: Upload observed package test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: Lugha-Store-validation-${{ github.run_id }}
+          path: target/store-validation/
+          if-no-files-found: error
+          retention-days: 3
