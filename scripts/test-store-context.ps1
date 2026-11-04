@@ -31,12 +31,14 @@ public static class PackageIdentity {
         $start.RedirectStandardInput = $true
         $start.RedirectStandardOutput = $true
         $start.RedirectStandardError = $true
-        $start.StandardInputEncoding = New-Object Text.UTF8Encoding($false)
         $start.StandardOutputEncoding = New-Object Text.UTF8Encoding($false)
         $process = [Diagnostics.Process]::Start($start)
         $output = $process.StandardOutput.ReadToEndAsync()
         $errorOutput = $process.StandardError.ReadToEndAsync()
-        $process.StandardInput.Write($case[1])
+        # Windows PowerShell 5's ProcessStartInfo has no StandardInputEncoding.
+        # Write UTF-8 bytes directly so non-ASCII inputs do not depend on its locale.
+        $inputBytes = [Text.Encoding]::UTF8.GetBytes($case[1])
+        $process.StandardInput.BaseStream.Write($inputBytes,0,$inputBytes.Length)
         $process.StandardInput.Close()
         if (-not $process.WaitForExit(180000)) { $process.Kill(); throw 'Installed translation timed out' }
         $text = $output.GetAwaiter().GetResult()
