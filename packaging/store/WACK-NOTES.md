@@ -54,3 +54,25 @@ Verification includes the actual linked executable's embedded manifest, Rust
 geometry tests from 100% through 300%, and normal translation regressions.
 Native visual and WACK rerun evidence must be recorded against the rebuilt
 artifact before treating this warning as resolved in the submission.
+
+## Verified native rerun and replacement identity
+
+The saved 4 November rerun XML reports `RuthShallom.LughaDesk` 1.0.0.0,
+`PARTIAL_RUN=FALSE`, overall PASS and DPIAwarenessValidation PASS. Its saved
+run context identifies the input as the DPI-FIX MSIX, SHA256
+`0fd9fe132a7ff64c52293156a898d8133168515a938630e224321080a432d04d`.
+The report filename alone did not identify this input correctly. The DPI trace
+explicitly recognized PerMonitorV2. There are 23 PASS results and the optional
+Blocked executables FAIL remains; overall PASS does not mean every optional
+test passed or that Microsoft has waived the finding.
+
+Partner Center rejected uploading changed contents under the old 1.0.0.0
+identity. The final replacement therefore uses 1.0.1.0, source
+`f307d83b3f68c9f95e162b47d484732e3dbb4495`, MSIX SHA256
+`e32c72b029b0fbe48d9e3b7ac894b93a6ebfb1a454a1e86627a1bb6f81eeba16`.
+Build 41855066249 and downloaded deployment report 41863738757 cover that
+package; all 57 payload hashes and its embedded EXE manifest were verified
+locally. Its EXE hash differs from the native WACK-tested build, so the above
+report must not be described as an exact native 1.0.1.0 WACK run. Native
+installed-package GUI validation also remains separate from the ARM-hosted
+deployment tests and prior native unpackaged GUI checks.
