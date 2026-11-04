@@ -1,0 +1,81 @@
+name: Isolated Store package validation
+on:
+  workflow_call:
+    inputs:
+      package_run_id:
+        required: true
+        type: string
+permissions:
+  contents: read
+  actions: read
+jobs:
+  validate:
+    runs-on: windows-11-arm
+    timeout-minutes: 35
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Inspect isolated Windows client environment
+        run: |
+          New-Item -ItemType Directory target/store-validation -Force | Out-Null
+          $sdkRoot = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits/10'
+          $report = [ordered]@{
+            os = (Get-CimInstance Win32_OperatingSystem).Caption
+            architecture = $env:PROCESSOR_ARCHITECTURE
+            wack_host = $(if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'blocked: Microsoft SDK WACK installer provides x86/amd64 binaries only; requires native x64 validation' } else { 'eligible; kit presence and results must still be checked' })
+            framework_packages = @(Get-AppxPackage Microsoft.VCLibs.140.00.UWPDesktop | ForEach-Object { $_.PackageFullName })
+            signtool = @(Get-ChildItem $sdkRoot -Filter signtool.exe -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
+            wack = @(Get-ChildItem $sdkRoot -Filter appcert.exe -Recurse -ErrorAction SilentlyContinue | ForEach-Object FullName)
+          }
+          $report | ConvertTo-Json -Depth 4 | Set-Content target/store-validation/environment.json -Encoding utf8
+          $report | ConvertTo-Json -Depth 4
+      - name: Install official Windows App Certification Kit in the disposable runner
+        # The signed SDK installer explicitly excludes ARM64 for WACK components.
+        # Do not mistake its successful no-op exit for an installed certification kit.
+        if: runner.arch == 'X64'
+        run: |
+          $setup = Join-Path $env:RUNNER_TEMP 'winsdksetup.exe'
+          # Microsoft SDK downloads: stable 10.0.26100.9457, September 2026.
+          # https://learn.microsoft.com/en-us/windows/apps/windows-sdk/downloads
+          curl.exe --fail --location --silent --show-error --retry 3 --proto '=https' --proto-redir '=https' --output $setup 'https://go.microsoft.com/fwlink/?linkid=2382321'
+          if ($LASTEXITCODE -ne 0) { throw 'Official SDK setup download failed' }
+          if ((Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'b0bdbad38ae74c40ccae8cdbcf229807627fba2bc3100be28301c4ba884f755e') { throw 'SDK setup digest mismatch' }
+          $signature = Get-AuthenticodeSignature $setup
+          if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notlike '*O=Microsoft Corporation*') { throw 'SDK setup Microsoft signature validation failed' }
+          $log = Join-Path (Resolve-Path target/store-validation).Path 'wack-setup.log'
+          $process = Start-Process $setup -ArgumentList @('/features','OptionId.WindowsSoftwareLogoToolkit','/quiet','/norestart','/ceip','off','/log',$log) -WindowStyle Hidden -Wait -PassThru
+          if ($process.ExitCode -notin @(0,3010)) { throw "WACK setup failed: $($process.ExitCode); inspect setup log" }
+          $kit = @(Get-ChildItem (Join-Path ${env:ProgramFiles(x86)} 'Windows Kits/10') -Filter appcert.exe -Recurse)
+          if (-not $kit.Count) { throw 'SDK setup did not provide appcert.exe' }
+          $kit | ForEach-Object { $_.FullName }
+      - name: Download the existing package and validate its source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PACKAGE_RUN_ID: ${{ inputs.package_run_id }}
+        run: |
+          if ($env:PACKAGE_RUN_ID -notmatch '^\d+$') { throw 'Expected a numeric workflow run ID' }
+          $run = gh api "repos/$env:GITHUB_REPOSITORY/actions/runs/$env:PACKAGE_RUN_ID" | ConvertFrom-Json
+          if ($LASTEXITCODE -ne 0 -or $run.conclusion -ne 'success' -or $run.head_branch -ne 'store/msix') { throw 'Expected a successful Store branch package run' }
+          gh run download $env:PACKAGE_RUN_ID --repo $env:GITHUB_REPOSITORY --name "Lugha-Desk-STORE-REVIEW-$($run.head_sha)" --dir target/store-review
+          if ($LASTEXITCODE -ne 0) { throw 'Package artifact download failed' }
+          $report = Get-Content target/store-review/store-build-report.json -Raw | ConvertFrom-Json
+          if ($report.source_revision -ne $run.head_sha) { throw 'Artifact/source revision mismatch' }
+          $package = Get-Item target/store-review/*.msix
+          if ((Get-FileHash $package.FullName -Algorithm SHA256).Hash.ToLowerInvariant() -ne $report.package_sha256) { throw 'MSIX digest mismatch' }
+          Copy-Item target/store-review/store-build-report.json target/store-validation/
+      - name: Verify failed removal cannot report success
+        run: ./tests/check_store_uninstall.ps1 -ArtifactDirectory target/store-review -OutputDirectory target/store-validation
+      - name: Install and exercise the package in the disposable runner
+        run: ./scripts/test-store-install.ps1 -ArtifactDirectory target/store-review -OutputDirectory target/store-validation
+      - name: Upload observed package test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: Lugha-Store-validation-${{ github.run_id }}
+          path: target/store-validation/
+          if-no-files-found: error
+          retention-days: 3
