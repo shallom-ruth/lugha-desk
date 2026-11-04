@@ -1,9 +1,11 @@
 #![windows_subsystem = "windows"]
-use std::{cell::RefCell,path::PathBuf, sync::{mpsc,Arc,Mutex,atomic::{AtomicBool,Ordering}}, time::Instant};
+use std::{cell::{Cell,RefCell},path::PathBuf, sync::{mpsc,Arc,Mutex,atomic::{AtomicBool,Ordering}}, time::Instant};
 use lugha_desk::{validate,wide,routes};
 mod native;
+mod dpi;
 mod worker;
 use windows_sys::Win32::{Foundation::*,Graphics::Gdi::*,System::LibraryLoader::GetModuleHandleW,UI::WindowsAndMessaging::*};
+use windows_sys::Win32::UI::HiDpi::{GetDpiForWindow,GetDpiForSystem};
 use windows_sys::Win32::UI::{Controls::EM_SETLIMITTEXT,Input::KeyboardAndMouse::{EnableWindow,SetFocus}};
 
 fn app_dir()->Result<PathBuf,String> {
@@ -12,7 +14,7 @@ fn app_dir()->Result<PathBuf,String> {
 }
 enum Event { Progress(String), Finished(Result<String,String>) }
 
-struct Ui {direction:HWND,input:HWND,output:HWND,button:HWND,coverage:HWND,status:HWND,warning:HWND,in_label:HWND,out_label:HWND,
+struct Ui {dpi:Cell<u32>,font:Cell<HFONT>,direction:HWND,input:HWND,output:HWND,button:HWND,coverage:HWND,status:HWND,warning:HWND,in_label:HWND,out_label:HWND,
     receiver:RefCell<Option<mpsc::Receiver<Event>>>,cancel:RefCell<Arc<AtomicBool>>,session:Arc<Mutex<Option<worker::Worker>>>,started:RefCell<Option<Instant>>,phase:RefCell<String>}
 unsafe fn text(h:HWND,s:&str){SetWindowTextW(h,wide(s).as_ptr());}
 unsafe fn control(parent:HWND,class:&str,value:&str,style:u32,id:usize)->HWND {
@@ -21,21 +23,34 @@ unsafe fn control(parent:HWND,class:&str,value:&str,style:u32,id:usize)->HWND {
     h
 }
 unsafe fn layout(hwnd:HWND,u:&Ui){
-    let mut r:RECT=std::mem::zeroed();GetClientRect(hwnd,&mut r);let w=r.right.max(650);let h=r.bottom.max(500);
-    MoveWindow(u.direction,24,22,w-240,260,1);MoveWindow(u.button,w-190,20,166,34,1);
-    MoveWindow(u.warning,24,66,w-48,50,1);
-    MoveWindow(u.in_label,24,124,w-48,22,1);MoveWindow(u.out_label,24,158+(h-260)/2,w-48,22,1);
-    MoveWindow(u.input,24,150,w-48,(h-270)/2,1);MoveWindow(u.output,24,184+(h-260)/2,w-48,(h-270)/2,1);
-    MoveWindow(u.status,24,h-40,w-255,32,1);MoveWindow(u.coverage,w-225,h-42,201,30,1);
+    let dpi=GetDpiForWindow(hwnd).max(96);
+    let handles=[u.direction,u.button,u.warning,u.in_label,u.out_label,u.input,u.output,u.status,u.coverage];
+    if u.dpi.get()!=dpi || u.font.get().is_null() {
+        let face=wide("Segoe UI");
+        let font=CreateFontW(-dpi::pixels(13,dpi),0,0,0,400,0,0,0,
+            DEFAULT_CHARSET as u32,OUT_DEFAULT_PRECIS as u32,CLIP_DEFAULT_PRECIS as u32,
+            DEFAULT_QUALITY as u32,DEFAULT_PITCH as u32,face.as_ptr());
+        if !font.is_null() {
+            let old=u.font.replace(font);u.dpi.set(dpi);
+            for handle in handles {SendMessageW(handle,WM_SETFONT,font as usize,1);}
+            if !old.is_null(){DeleteObject(old);}
+        }
+    }
+    let mut r:RECT=std::mem::zeroed();GetClientRect(hwnd,&mut r);
+    let rects=dpi::controls(dpi::logical(r.right,dpi),dpi::logical(r.bottom,dpi));
+    for (handle,(x,y,w,h)) in handles.into_iter().zip(rects) {
+        MoveWindow(handle,dpi::pixels(x,dpi),dpi::pixels(y,dpi),dpi::pixels(w,dpi),dpi::pixels(h,dpi),1);
+    }
 }
 unsafe extern "system" fn wndproc(hwnd:HWND,msg:u32,wp:usize,lp:isize)->isize {
     if msg==WM_GETMINMAXINFO {
         let limits=&mut *(lp as *mut MINMAXINFO);
-        limits.ptMinTrackSize=POINT{x:720,y:580};return 0;
+        let dpi=GetDpiForWindow(hwnd).max(96);
+        limits.ptMinTrackSize=POINT{x:dpi::pixels(720,dpi),y:dpi::pixels(580,dpi)};return 0;
     }
     let ptr=GetWindowLongPtrW(hwnd,GWLP_USERDATA) as *mut Ui;
     if msg==WM_DESTROY {
-        if !ptr.is_null(){let u=Box::from_raw(ptr);u.cancel.borrow().store(true,Ordering::Relaxed);SetWindowLongPtrW(hwnd,GWLP_USERDATA,0);}
+        if !ptr.is_null(){let u=Box::from_raw(ptr);u.cancel.borrow().store(true,Ordering::Relaxed);let font=u.font.get();if !font.is_null(){DeleteObject(font);}SetWindowLongPtrW(hwnd,GWLP_USERDATA,0);}
         PostQuitMessage(0);return 0;
     }
     if ptr.is_null(){return DefWindowProcW(hwnd,msg,wp,lp);}
@@ -44,6 +59,11 @@ unsafe extern "system" fn wndproc(hwnd:HWND,msg:u32,wp:usize,lp:isize)->isize {
     let u=&*ptr;
     match msg {
         WM_SIZE=>{layout(hwnd,u);0},
+        WM_DPICHANGED=>{
+            let r=&*(lp as *const RECT);
+            SetWindowPos(hwnd,std::ptr::null_mut(),r.left,r.top,r.right-r.left,r.bottom-r.top,SWP_NOZORDER|SWP_NOACTIVATE);
+            layout(hwnd,u);0
+        },
         WM_COMMAND if wp&0xffff==9 && (wp>>16)==0=>{
             MessageBoxW(hwnd,wide("KENYA\nSwahili and Somali: model installed; quality not certified.\nGĩkũyũ, Dholuo, Kikamba: native model integration pending.\nOther Kenyan language varieties need individual model checks.\n\nSOUTH AFRICA\nisiZulu, isiXhosa, Sesotho, Setswana, Afrikaans: installed experimental routes.\nSepedi, Xitsonga, Tshivenda, siSwati, Southern isiNdebele: model integration pending.\n\n19 model language options are installed. 120 distinct African languages is the long-term goal. A menu entry or a fluent output does not establish translation accuracy.\n\nSUPPORT AND VOLUNTARY REPORTS\nReport incorrect or inappropriate translations to:\nshalomruth90@gmail.com\nShare only information you choose to send. This dialog sends nothing.\nTranslations are generated by a local AI model and can be wrong.\nPrivacy: https://shallom-ruth.github.io/lugha-desk.html#components\nSource: https://github.com/shallom-ruth/lugha-desk").as_ptr(),wide("Language coverage and support").as_ptr(),MB_OK);0
         },
@@ -89,7 +109,7 @@ unsafe fn gui()->Result<(),String>{
     wc.hCursor=LoadCursorW(std::ptr::null_mut(),IDC_ARROW);wc.hbrBackground=(COLOR_WINDOW+1) as HBRUSH;
     if RegisterClassW(&wc)==0{return Err("Cannot register the application window.".into());}
     let hwnd=CreateWindowExW(0,class.as_ptr(),wide("Lugha Desk").as_ptr(),WS_OVERLAPPEDWINDOW,
-        CW_USEDEFAULT,CW_USEDEFAULT,900,720,std::ptr::null_mut(),std::ptr::null_mut(),instance,std::ptr::null());
+        CW_USEDEFAULT,CW_USEDEFAULT,dpi::pixels(900,GetDpiForSystem()),dpi::pixels(720,GetDpiForSystem()),std::ptr::null_mut(),std::ptr::null_mut(),instance,std::ptr::null());
     if hwnd.is_null(){return Err("Cannot create the application window.".into());}
     let direction=control(hwnd,"COMBOBOX","",WS_TABSTOP|0x3|WS_VSCROLL,2);
     for (_,label) in routes(){SendMessageW(direction,CB_ADDSTRING,0,wide(&label).as_ptr() as isize);}
@@ -97,7 +117,7 @@ unsafe fn gui()->Result<(),String>{
     let input=control(hwnd,"EDIT","",WS_TABSTOP|WS_BORDER|WS_VSCROLL|4|64|4096,3);
     SendMessageW(input,EM_SETLIMITTEXT,1200,0);
     let output=control(hwnd,"EDIT","",WS_TABSTOP|WS_BORDER|WS_VSCROLL|4|64|2048,4);
-    let u=Box::new(Ui {direction,input,output,button:control(hwnd,"BUTTON","Translate offline",WS_TABSTOP,1),
+    let u=Box::new(Ui {dpi:Cell::new(0),font:Cell::new(std::ptr::null_mut()),direction,input,output,button:control(hwnd,"BUTTON","Translate offline",WS_TABSTOP,1),
         coverage:control(hwnd,"BUTTON","Coverage and support",WS_TABSTOP,9),
         warning:control(hwnd,"STATIC","Experimental model: meaning errors remain. Additional languages are not independently validated.\r\n19 model language options installed; 120 African languages is a future goal. See coverage for missing local languages.",0,5),
         status:control(hwnd,"STATIC","Python-free · max 600 characters · no history saved",0,6),

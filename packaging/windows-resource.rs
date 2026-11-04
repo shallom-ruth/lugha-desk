@@ -13,6 +13,10 @@ fn main() {
     assert_eq!(env::var("CARGO_CFG_TARGET_ENV").unwrap(), "msvc",
         "Release metadata currently requires the Windows MSVC toolchain");
     let launcher = env::var("CARGO_PKG_NAME").unwrap() == "lugha-desk-launcher";
+    // The launcher retains its existing Windows scaling behavior. The app handles
+    // WM_DPICHANGED and scales its layout/font before declaring PerMonitorV2.
+    let manifest = shared.parent().unwrap().join("app.manifest");
+    println!("cargo:rerun-if-changed={}", manifest.display());
     let version = env::var("CARGO_PKG_VERSION").unwrap();
     let numeric: Vec<u16> = version.split('-').next().unwrap().split('.')
         .map(|part| part.parse().expect("Invalid release version")).collect();
@@ -52,6 +56,12 @@ BEGIN
  END
 END
 "#)).unwrap();
+    if !launcher {
+        use std::io::Write;
+        let escaped = manifest.to_str().unwrap().replace('\\', "\\\\");
+        writeln!(fs::OpenOptions::new().append(true).open(&source).unwrap(),
+            "1 24 \"{escaped}\"").unwrap();
+    }
     let sdk = PathBuf::from(env::var_os("ProgramFiles(x86)").expect("Windows SDK location missing"))
         .join("Windows Kits/10/bin");
     let mut candidates: Vec<PathBuf> = fs::read_dir(&sdk)
