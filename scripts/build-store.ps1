@@ -122,7 +122,7 @@ try {
     $output = Join-Path $repo 'dist/store'
     if (Test-Path -LiteralPath $output) { throw 'Use a fresh Store output directory' }
     New-Item -ItemType Directory -Path $output | Out-Null
-    $package = Join-Path $output 'Lugha-Desk-1.0.0.0-x64-STORE-SUBMISSION-UNSIGNED.msix'
+    $package = Join-Path $output 'Lugha-Desk-1.0.1.0-x64-STORE-SUBMISSION-UNSIGNED.msix'
     & $makeAppx pack /d $payload /p $package
     if ($LASTEXITCODE -ne 0) { throw 'Windows SDK MSIX validation/pack failed' }
     $unpacked = Join-Path $buildRoot 'unpacked'

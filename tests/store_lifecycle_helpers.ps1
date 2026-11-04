@@ -67,8 +67,8 @@ function Install-StoreTestUpdate([string]$Package, $Certificate, [string]$SignTo
     if ($LASTEXITCODE -ne 0) { throw 'Update fixture unpack failed' }
     $manifestPath = Join-Path $unpack 'AppxManifest.xml'
     [xml]$manifest = Get-Content $manifestPath -Raw
-    if ($manifest.Package.Identity.Version -ne '1.0.0.0') { throw 'Unexpected original version' }
-    $manifest.Package.Identity.Version = '1.0.0.1'
+    if ($manifest.Package.Identity.Version -ne '1.0.1.0') { throw 'Unexpected original version' }
+    $manifest.Package.Identity.Version = '1.0.1.1'
     $manifest.Save($manifestPath)
     $updated = Join-Path $env:RUNNER_TEMP 'Lugha-Desk-UPDATE-TEST-ONLY.msix'
     & $makeappx pack /d $unpack /p $updated /o | Out-Host
@@ -77,6 +77,6 @@ function Install-StoreTestUpdate([string]$Package, $Certificate, [string]$SignTo
     if ($LASTEXITCODE -ne 0) { throw 'Update fixture signing failed' }
     Add-AppxPackage -Path $updated -DependencyPath $FrameworkPath
     $installed = Get-AppxPackage RuthShallom.LughaDesk
-    if ($installed.Version.ToString() -ne '1.0.0.1' -or $installed.PackageFamilyName -ne 'RuthShallom.LughaDesk_mj1zfg7cgz4xj') { throw 'Store test update identity mismatch' }
+    if ($installed.Version.ToString() -ne '1.0.1.1' -or $installed.PackageFamilyName -ne 'RuthShallom.LughaDesk_mj1zfg7cgz4xj') { throw 'Store test update identity mismatch' }
     return $installed
 }

@@ -1,5 +1,5 @@
 param([Parameter(Mandatory)][string]$InstallLocation,[Parameter(Mandatory)][string]$OutputDirectory,
-    [ValidateSet('1.0.0.0','1.0.0.1')][string]$ExpectedVersion='1.0.0.0')
+    [ValidateSet('1.0.1.0','1.0.1.1')][string]$ExpectedVersion='1.0.1.0')
 $ErrorActionPreference = 'Stop'
 $result = [ordered]@{ status='failed'; context='debug process with package identity, not full GUI parity'; cases=@() }
 try {
