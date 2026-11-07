@@ -9,7 +9,8 @@ Lugha Desk is free, open-source Windows software developed by Ruth Shallom for o
 ## Code signing policy
 
 See [CODE_SIGNING.md](CODE_SIGNING.md) for maintainer roles, build provenance,
-privacy links and the proposed SignPath signing process. Public preview downloads remain unsigned. Windows may show an unknown-publisher warning. See [installation and removal](INSTALLATION.md) for setup changes.
+privacy links and the proposed signing process. Public preview downloads are
+unsigned, so Windows may show an unknown-publisher warning. See [installation and removal](INSTALLATION.md) for setup changes.
 
 The `Windows unsigned review build` GitHub Actions workflow builds both the app
 and the recovered launcher from this repository. Review artifacts are unsigned

@@ -1,10 +1,7 @@
 # Code signing policy
 
-Public preview downloads are unsigned. Windows may show an unknown-publisher warning.
-
-Public preview downloads, including v0.3.3-preview, are unsigned. A paid signing
-subscription has not been purchased. Lugha Desk remains free, open source and
-offline after model setup. Do not claim SignPath acceptance or endorsement.
+Public preview downloads are unsigned. Windows may show an unknown-publisher
+warning. Lugha Desk remains free, open source and offline after model setup.
 
 The design below describes a possible future signing process if approved.
 
