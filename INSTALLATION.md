@@ -1,9 +1,24 @@
 # Windows installation and removal
 
-Lugha Desk is experimental Windows 10/11 x64 software. Current published downloads
-are unsigned; see the [code signing policy](CODE_SIGNING.md).
+Lugha Desk is experimental Windows 10/11 x64 software.
 
-## Installation changes
+## Install from Microsoft Store
+
+1. Open [Lugha Desk in the Microsoft Store](https://apps.microsoft.com/detail/9nvzbthpbr1c) and install the app.
+2. Open Lugha Desk from the Start menu. The Store package includes the translation model and engine, so you can translate text offline after installation without a separate model download.
+
+To remove the Store version, find Lugha Desk in the Windows Start menu, right-click it, and select **Uninstall**.
+
+## GitHub preview setup
+
+1. Close any open Lugha Desk app or setup window, then open the [GitHub preview installer](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.4-preview/Lugha-Desk-Launcher-Windows-x64.exe).
+2. Choose **Download model**. The launcher verifies and reuses a complete existing model. You can pause and resume a new download. Allow at least 1.3 GB of free disk space.
+3. If prompted, install the Microsoft Visual C++ x64 runtime using the official link offered by the launcher, then return to setup.
+4. Choose **Open Lugha Desk**. Once the model is saved, translation works offline.
+
+The GitHub preview installer is unsigned. See the [code signing policy](CODE_SIGNING.md).
+
+### Installation changes
 
 The launcher saves app files, runtime files, notices and its downloaded model in:
 
@@ -23,7 +38,7 @@ launcher opens [Microsoft's official page](https://learn.microsoft.com/cpp/windo
 and the user completes Microsoft's installer separately. No copied Windows
 system DLLs are bundled by this build process.
 
-## Removal
+### Removal
 
 1. Close the Lugha Desk app and launcher; allow the local model process to exit.
 2. Open `%LOCALAPPDATA%\Programs` in File Explorer. Check that `Lugha Desk Launcher`
