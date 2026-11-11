@@ -31,7 +31,13 @@ end users. The launcher packaging script does not embed model weights.
 
 ## Download and Windows setup
 
-[Download the free Windows launcher, about 21.6 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.4-preview/Lugha-Desk-Launcher-Windows-x64.exe)
+**[Get Lugha Desk from Microsoft Store](https://apps.microsoft.com/detail/9nvzbthpbr1c)**
+
+The Store package includes the translation model and engine. After installation, Lugha Desk translates text locally on your Windows PC and works offline. The 19 African-language options are experimental.
+
+### GitHub preview installer
+
+[Download the GitHub preview installer, about 21.6 MB](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.3.4-preview/Lugha-Desk-Launcher-Windows-x64.exe)
 
 [Release notes and checksum](https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.4-preview)
 
@@ -45,13 +51,13 @@ end users. The launcher packaging script does not embed model weights.
 
 No Python, R, Rust installation, account or paid API is needed. Loading progress and Cancel are available. The first short translation took about 10 to 12 seconds on the test laptop, with repeat translations taking about 5 to 7 seconds. Other computers and longer text may take longer.
 
-This is an experimental preview with known translation errors. The executable is unsigned. Keep Windows security protections enabled.
+The GitHub preview has known translation errors. Its executable is unsigned. Keep Windows security protections enabled.
 
 [Previous ZIP download, retained as a fallback](https://github.com/shallom-ruth/lugha-desk/releases/download/v0.2.0/Lugha-Desk-0.2.0-Windows-x64.zip). Extract the entire ZIP before opening its app and keep the model and runtime folders together. Do not run inside the ZIP.
 
 Greeting dictionary
 
-The v0.3.3-preview release extends the six earlier greeting entries with four phrase pairs for Wolof, Luganda and Yoruba. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. New entries await fluent-speaker review and are retained in the download above. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
+The v0.3.3-preview release extends the six earlier greeting entries with four phrase pairs for Wolof, Luganda and Yoruba. Complete standalone greetings use a small reference-checked dictionary; longer sentences continue through the existing offline model. New entries await fluent-speaker review and are retained in the GitHub preview installer. Lingala entries are excluded pending review. No model retraining was performed, and general translation errors remain possible. See [GREETING_DICTIONARY.md](GREETING_DICTIONARY.md) for exact entries, sources, matching rules and tests.
 
 Previous launcher: https://github.com/shallom-ruth/lugha-desk/releases/tag/v0.3.0-preview
 
